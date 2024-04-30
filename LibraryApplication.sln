@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "src\API\API.csproj", "{3C664A8D-9111-4D84-9B19-A9E3C760A29F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "src\API\API.csproj", "{3C664A8D-9111-4D84-9B19-A9E3C760A29F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryConsoleClient", "src\LibraryConsoleClient\LibraryConsoleClient.csproj", "{7C37629F-F1BD-4F35-BD7B-FE5C9EBA50CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryConsoleClient", "src\LibraryConsoleClient\LibraryConsoleClient.csproj", "{7C37629F-F1BD-4F35-BD7B-FE5C9EBA50CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "src\DataAccess\DataAccess.csproj", "{8BA0B967-91DE-4540-9BEA-B469B6342E1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "src\DataAccess\DataAccess.csproj", "{8BA0B967-91DE-4540-9BEA-B469B6342E1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "src\Playground\Playground\Playground.csproj", "{95A775A6-7EFB-4620-B0E0-05BB0125BC91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playground", "src\Playground\Playground\Playground.csproj", "{95A775A6-7EFB-4620-B0E0-05BB0125BC91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APITests", "src\APITests\APITests.csproj", "{C0437060-E232-4055-A876-AC621DC825DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APITests", "src\APITests\APITests.csproj", "{C0437060-E232-4055-A876-AC621DC825DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessTests", "src\DataAccessTests\DataAccessTests.csproj", "{65D13F36-DC2A-45EA-9DEF-1C3266C75ECD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{C0437060-E232-4055-A876-AC621DC825DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0437060-E232-4055-A876-AC621DC825DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0437060-E232-4055-A876-AC621DC825DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65D13F36-DC2A-45EA-9DEF-1C3266C75ECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65D13F36-DC2A-45EA-9DEF-1C3266C75ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65D13F36-DC2A-45EA-9DEF-1C3266C75ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65D13F36-DC2A-45EA-9DEF-1C3266C75ECD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

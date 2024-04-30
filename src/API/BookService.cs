@@ -60,17 +60,17 @@ namespace API
 
         public List<Book> GetAllBooksByPattern(BookSearchObject searchObject)
         {
-            List<Book> filteredBooks = new List<Book>();
+            IEnumerable<Book> books = bookRepository.FindAll();
+            List<Book> filteredList = new List<Book>();
+            if (books.Count() > 0)
+            {
+                filteredList = books.ToList().Where(b => (searchObject.Title == null || b.Title.ToLowerInvariant().Contains(searchObject.Title.ToLowerInvariant())) && (searchObject.Author == null || $"{b.AuthorName} {b.AuthorSurname}".ToLowerInvariant().Contains(searchObject.Author)) && (searchObject.Publisher == null || b.Publisher.ToLowerInvariant().Contains(searchObject.Publisher.ToLowerInvariant())))
+                    .SelectMany(b => new Book[] { b })
+                    .Distinct()
+                    .ToList();
+            }
 
-            filteredBooks = bookRepository.FindAll()
-                .Where(b => searchObject.Title == null || b.Title.ToLower().Contains(searchObject.Title?.ToLower())
-                && searchObject.Author == null || ($"{b.AuthorName} {b.AuthorSurname}".ToLower().Contains(searchObject.Author.ToLower())
-                && searchObject.Publisher == null || b.Publisher.ToLower().Contains(searchObject.Publisher.ToLower())))
-                .SelectMany(b => new Book[] { b })
-                .Distinct()
-                .ToList();
-
-            return filteredBooks;
+            return filteredList;
         }
 
     }

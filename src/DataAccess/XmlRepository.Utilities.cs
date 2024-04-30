@@ -31,7 +31,7 @@ namespace DataAccess
             XElement booksElement = new XElement("Books");
             booksElement.Add(
                 new XElement("Book",
-                    new XElement("id", 1),
+                    new XElement("Id", 1),
                     new XElement("Title", "The Lord of the Rings"),
                     new XElement("AuthorName", "J.R.R."),
                     new XElement("AuthorSurname", "Tolkien"),
@@ -41,7 +41,7 @@ namespace DataAccess
             );
             booksElement.Add(
                 new XElement("Book",
-                    new XElement("id", 2),
+                    new XElement("Id", 2),
                     new XElement("Title", "Pride and Prejudice"),
                     new XElement("AuthorName", "Jane"),
                     new XElement("AuthorSurname", "Austen"),
@@ -51,7 +51,7 @@ namespace DataAccess
             );
             booksElement.Add(
                 new XElement("Book",
-                    new XElement("id", 3),
+                    new XElement("Id", 3),
                     new XElement("Title", "To Kill a Mockingbird"),
                     new XElement("AuthorName", "Harper"),
                     new XElement("AuthorSurname", "Lee"),
@@ -64,7 +64,7 @@ namespace DataAccess
             XElement usersElement = new XElement("Users");
             usersElement.Add(
                 new XElement("User",
-                    new XElement("id", 1),
+                    new XElement("Id", 1),
                     new XElement("Username", "user1"),
                     new XElement("Password", "hashed_password1"), // Replace with hashed password
                     new XElement("Role", "Member")
@@ -72,7 +72,7 @@ namespace DataAccess
             );
             usersElement.Add(
                 new XElement("User",
-                    new XElement("id", 2),
+                    new XElement("Id", 2),
                     new XElement("Username", "user2"),
                     new XElement("Password", "hashed_password2"), // Replace with hashed password
                     new XElement("Role", "Admin")
@@ -80,7 +80,7 @@ namespace DataAccess
             );
             usersElement.Add(
                 new XElement("User",
-                    new XElement("id", 3),
+                    new XElement("Id", 3),
                     new XElement("Username", "user3"),
                     new XElement("Password", "hashed_password3"), // Replace with hashed password
                     new XElement("Role", "Librarian")
@@ -91,7 +91,7 @@ namespace DataAccess
             XElement reservationsElement = new XElement("Reservations");
             reservationsElement.Add(
                 new XElement("Reservation",
-                    new XElement("id", 1),
+                    new XElement("Id", 1),
                     new XElement("userid", 1),
                     new XElement("bookid", 1),
                     new XElement("StartDate", DateTime.Now.ToString("yyyy-MM-dd")), // Assuming reservation starts today

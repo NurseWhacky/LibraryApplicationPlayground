@@ -9,9 +9,14 @@ using System.Threading.Tasks;
 
 namespace API
 {
-    internal class UserService
+    public class UserService
     {
         private readonly IRepository<User> userRepository;
+
+        public UserService()
+        {
+            userRepository = new XmlRepository<User>();
+        }
 
         public UserService(IRepository<User> userRepository)
         {
@@ -29,6 +34,11 @@ namespace API
             }
             return null;
 
+        }
+
+        public User? GetUserById(int id)
+        {
+            return userRepository.FindById(id);
         }
 
         public User? GetUserByUsername(string username)

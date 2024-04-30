@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using API.Model;
 using DataAccess;
+using API.DTOs;
 
 namespace API.Tests
 {
@@ -23,11 +24,31 @@ namespace API.Tests
         [TestMethod()]
         public void GetAllBooksByPatternTest()
         {
-            List<Book> should_contain_one_book = serviceTest.GetAllBooksByPattern(new DTOs.BookSearchObject(title: "be back", author: null, publisher: null, true));
+            List<Book> should_contain_ToKillAMockingBird = serviceTest.GetAllBooksByPattern(new BookSearchObject(title: "mocking", author: null, publisher: null, true));
 
-            Console.WriteLine(should_contain_one_book.Count);
+            Console.WriteLine(should_contain_ToKillAMockingBird.Count);
+            foreach (var b in should_contain_ToKillAMockingBird)
+            {
+                Console.WriteLine(b.Title);
 
-            Assert.IsTrue(should_contain_one_book.Count == 1);
+            }
+
+            Assert.IsTrue(should_contain_ToKillAMockingBird.Count == 1);
         }
+
+
+        //[TestMethod()]
+        //public void GetAllBooksTest()
+        //{
+        //    List<Book> books = serviceTest.GetAllBooks();
+        //    foreach (Book book in books)
+        //    {
+        //        Console.WriteLine(book.Title);
+        //    }
+
+        //    Console.WriteLine(books.Count());
+        //    Assert.IsTrue(books.Count > 0);
+        //}
+        //}
     }
 }
