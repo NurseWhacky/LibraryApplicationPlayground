@@ -25,15 +25,7 @@ namespace API
 
         public User? DoLogin(UserLoginDTO credendials)
         {
-            if (credendials.Username is not null || credendials.Password is not null)
-            {
-                // TODO : implement hash password
-                User user = userRepository.FindAll()
-                    .FirstOrDefault(u => (u.UserName == credendials.Username) && (u.Password == credendials.Password));
-                return user;
-            }
-            return null;
-
+            
         }
 
         public User? GetUserById(int id)

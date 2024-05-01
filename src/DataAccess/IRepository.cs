@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess
 {
-    public interface IRepository<T> where T : new()
+    public interface IRepository<T>
     {
         IEnumerable<T> FindAll();
         T FindById(object id);

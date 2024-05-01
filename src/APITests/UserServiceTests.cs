@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using API.Model;
+using API.DTOs;
 
 namespace API.Tests
 {
@@ -20,6 +21,14 @@ namespace API.Tests
             int id = 2;
             User? user = service.GetUserById(id);
             Assert.IsNotNull(user);
+        }
+
+        [TestMethod()]
+        public void DoLoginTest()
+        {
+            UserLoginDTO userLoginDTO = new UserLoginDTO("user2", "hashed_password2");
+            User? admin = service.DoLogin(userLoginDTO);
+            Assert.IsNotNull(admin);
         }
     }
 }

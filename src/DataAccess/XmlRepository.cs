@@ -7,24 +7,44 @@ using System.Xml.Linq;
 
 namespace DataAccess
 {
-    public class XmlRepository<T> : IRepository<T> where T : class, new()
+    public class XmlRepository<T> : IRepository<T>  where T : class, new()
     {
         //private List<T> entities;
-        private XDocument xmlDB;
+        private XElement xmlDB;
         private readonly string filePath = "library.xml"; // debug folder in entry point project
         //private Utilities util;
 
         public XmlRepository()
         {
-            //xmlDB = LoadFile();
+            xmlDB = LoadFile();
         }
-        public XDocument LoadFile()
+        private XElement? LoadFile()
         {
             if (!File.Exists(filePath))
             {
-                return new XDocument(new XElement("Library"));
+                //return new XElement();
+                return null;
             }
-            return XDocument.Load(filePath);
+            return XElement.Load(filePath);
+        }
+
+        private void WriteFile(XDocument doc)
+        {
+            try
+            {
+                if (!File.Exists(filePath))
+                {
+                    // create new file 
+                    using (FileStream fs = File.Create(filePath))
+                    { }
+                }
+
+                // write doc to new file
+                doc.Save(filePath);
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+
+
         }
 
         public void Add(T entity)
@@ -38,17 +58,20 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
-        public IEnumerable<T> FindAll()
+        //TODO : check this -> https://learn.microsoft.com/en-us/dotnet/standard/linq/find-descendants-specific-element-name
+        public List<T> FindAll()
         {
             List<T> list = new List<T>();
-            xmlDB = LoadFile();
-            foreach (var node in xmlDB.Descendants().Where(d => d.Name == typeof(T).Name))
+            //xmlDB = LoadFile();
+            IEnumerable<XElement> xElements = 
+                from el in xmlDB.Descendants(typeof(T).Name)
+                select el;
+            //foreach (var node in xmlDB.Descendants().Where(d => d.Name == typeof(T).Name))
+            foreach (XElement element in xElements)
             {
-                if (node is XElement element)
-                {
-                    T entity = element.ToEntity<T>();
-                    list.Add(entity);
-                }
+                T entity = element.ToEntity<T>();
+                list.Add(entity);
+
             }
             return list;
 
@@ -61,7 +84,7 @@ namespace DataAccess
             //throw new NotImplementedException();
         }
 
-        public IEnumerable<T> FindByPattern(string pattern)
+        public List<T> FindByPattern(string pattern)
         {
             throw new NotImplementedException();
         }
