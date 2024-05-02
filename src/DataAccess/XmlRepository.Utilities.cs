@@ -14,7 +14,7 @@ namespace DataAccess
         private readonly string filePath = "lastUsedId.xml";
 
 
-        public static void NextId(Type type)
+        public static int NextId(Type type)
         {
             XElement lastIds = new XElement("LastUsedIds");
             

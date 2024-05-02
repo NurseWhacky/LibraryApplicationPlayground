@@ -14,7 +14,7 @@ namespace API.Tests
     [TestClass()]
     public class BookServiceTests
     {
-        BookService serviceTest = new BookService();
+        BookService serviceTest = new BookService(new XmlRepository<Book>(), new LoggedUser("usr", "User"));
         //List<Book> books = new List<Book>() {
         //    new Book() { AuthorName = "ciccio", AuthorSurname = "pasticcio", Title = "Piccolo Pippo cucciolo eroico", Publisher = "Mondadori" },
         // new Book() { AuthorName = "Papa", AuthorSurname = "Francesco", Title = "La buona novella", Publisher = "Mondadori" },

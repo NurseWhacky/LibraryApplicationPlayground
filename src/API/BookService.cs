@@ -12,21 +12,35 @@ namespace API
     public class BookService
     {
         private readonly IRepository<Book> bookRepository;
+        private readonly LoggedUser currentUser;
+        //private readonly User authenticatedUser;
+        //private readonly UserContext currentUser;
 
-        public BookService()
-        {
-            bookRepository = new XmlRepository<Book>();
-        }
+        //public BookService()
+        //{
+        //    bookRepository = new XmlRepository<Book>();
+        //}
 
-        public BookService(IRepository<Book> bookRepository)
+        //public BookService(IRepository<Book> bookRepository, UserContext context)
+        public BookService(IRepository<Book> bookRepository, LoggedUser currentUser)
         {
             this.bookRepository = bookRepository;
+            this.currentUser = currentUser;
         }
 
-        public void AddBook(Book book, User user)
+        public void AddBook(Book book)
         {
-            if (user.Role == User.UserRole.Admin)
+            if (currentUser.IsAdmin)
             {
+            Book? duplicate = bookRepository.FindAll().Where(d => book.Equals(d)).FirstOrDefault();
+                duplicate is null ? bookRepository.Add(book) : bookRepository.UpdateQuantity();
+
+            }
+            {
+                if(duplicate is not null)
+                {
+                    bookRepository.Update
+                }
                 bookRepository.Add(book);
             }
             else
@@ -36,18 +50,20 @@ namespace API
 
         }
 
-        public void EditBook(Book book, User user)
+        public void EditBook(Book book)
         {
-            if (user.Role == User.UserRole.Admin)
+            //if (authenticatedUser.Role == UserRole.Admin)
+            if (currentUser.IsAdmin)
             {
 
                 bookRepository.Update(book);
             }
         }
 
-        public void DeleteBook(Book book, User user)
+        public void DeleteBook(Book book)
         {
-            if (user.Role == User.UserRole.Admin)
+            //if (authenticatedUser.Role == UserRole.Admin)
+            if (currentUser.IsAdmin)
             {
                 bookRepository.Delete(book);
             }

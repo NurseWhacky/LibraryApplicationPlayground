@@ -8,14 +8,21 @@ using System.Xml.Linq;
 
 namespace DataAccess
 {
+    //to the garbage compactor!
     public static class XmlExtensions
     {
-        public static T ToEntity<T>(this XElement element) where T : new()
+        public static T ToEntity<T>(this XElement element, Dictionary<string, Func<XElement, object>> propertyMap) where T : new()
         {
             T entity = new T();
             var properties = typeof(T).GetProperties();
             foreach (var property in properties)
             {
+                if (propertyMap.ContainsKey(property.Name))
+                {
+                    object value = propertyMap[property.Name](element);
+                    if (value is not null)
+                    { property.SetValue(entity, value); }
+                }
                 var attribute = element.Attribute(property.Name);
                 if (attribute is not null)
                 {

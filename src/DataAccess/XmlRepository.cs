@@ -9,14 +9,18 @@ namespace DataAccess
 {
     public class XmlRepository<T> : IRepository<T>  where T : class, new()
     {
-        //private List<T> entities;
-        private XElement xmlDB;
+        private XElement xLibrary;
         private readonly string filePath = "library.xml"; // debug folder in entry point project
-        //private Utilities util;
+        private List<T> entities = new();
 
         public XmlRepository()
         {
-            xmlDB = LoadFile();
+            xLibrary = LoadFile();
+            var xList = from el in xLibrary.Elements(typeof(T).Name) select el;
+            foreach(var el in xList)
+            {
+                entities.Add(el.ToEntity<T>())
+            }
         }
         private XElement? LoadFile()
         {
@@ -28,7 +32,7 @@ namespace DataAccess
             return XElement.Load(filePath);
         }
 
-        private void WriteFile(XDocument doc)
+        private void WriteFile(XElement doc)
         {
             try
             {
@@ -38,7 +42,6 @@ namespace DataAccess
                     using (FileStream fs = File.Create(filePath))
                     { }
                 }
-
                 // write doc to new file
                 doc.Save(filePath);
             }
@@ -62,26 +65,24 @@ namespace DataAccess
         public List<T> FindAll()
         {
             List<T> list = new List<T>();
-            //xmlDB = LoadFile();
             IEnumerable<XElement> xElements = 
-                from el in xmlDB.Descendants(typeof(T).Name)
+                from el in xLibrary.Descendants(typeof(T).Name)
                 select el;
             //foreach (var node in xmlDB.Descendants().Where(d => d.Name == typeof(T).Name))
-            foreach (XElement element in xElements)
-            {
-                T entity = element.ToEntity<T>();
-                list.Add(entity);
+            //foreach (XElement element in xElements)
+            //{
+            //    T entity = element.ToEntity<T>();
+            //    list.Add(entity);
 
-            }
+            //}
             return list;
 
         }
 
         public T? FindById(object id)
         {
-            T? result = FindAll().FirstOrDefault(r => r.GetType() == typeof(T) && r.GetType().GetProperty("Id").GetValue(r) == id);
+            T? result = FindAll().FirstOrDefault(r => r.GetType() == typeof(T) && r.GetType().GetProperty($"{r.GetType().Name}Id").GetValue(r) == id);
             return result;
-            //throw new NotImplementedException();
         }
 
         public List<T> FindByPattern(string pattern)
@@ -96,7 +97,24 @@ namespace DataAccess
 
         public void Update(T entity)
         {
+            object? entityId = entity.GetType().GetProperty($"{entity.GetType()}Id").GetValue(entity);
+            T? entityToUpdate = FindById(entityId);
+
+
+        }
+
+        IEnumerable<T> IRepository<T>.FindAll()
+        {
             throw new NotImplementedException();
         }
+
+        IEnumerable<T> IRepository<T>.FindByPattern(string pattern)
+        {
+            throw new NotImplementedException();
+        }
+        
+        ////this is for serialization
+        ///
+        //public T Deserialize();
     }
 }

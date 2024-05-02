@@ -11,22 +11,20 @@ namespace API
 {
     public class UserService
     {
+        private readonly IUserContext? userContext;
         private readonly IRepository<User> userRepository;
 
-        public UserService()
-        {
-            userRepository = new XmlRepository<User>();
-        }
+        //public UserService()
+        //{
+        //    userRepository = new XmlRepository<User>();
+        //}
 
-        public UserService(IRepository<User> userRepository)
+        public UserService(IRepository<User> userRepository, IUserContext currentUser)
         {
             this.userRepository = userRepository;
+            this.userContext = currentUser;
         }
 
-        public User? DoLogin(UserLoginDTO credendials)
-        {
-            
-        }
 
         public User? GetUserById(int id)
         {
