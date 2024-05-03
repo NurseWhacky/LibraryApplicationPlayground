@@ -34,12 +34,42 @@ using (var writer = new StreamWriter("prova.xml", false))
 
 Library deserLib = new();
 
-using(var reader = new StreamReader("prova.xml"))
+using (var reader = new StreamReader("prova.xml"))
 {
-    deserLib = (Library) serializer.Deserialize(reader);
+    deserLib = (Library)serializer.Deserialize(reader);
     foreach (Book book in deserLib.Books)
-        {
-            Console.WriteLine($"Title: {book.Title}, Author: {book.AuthorName} {book.AuthorSurname}");
-        }
+    {
+        Console.WriteLine($"Title: {book.Title}, Author: {book.AuthorName} {book.AuthorSurname}");
+    }
+    /// findall sketch method
 }
+
+
+
+List<Book> FindAllBooksInFile()
+{
+    //Declare List<Book>
+    List<Book> books = new List<Book>();
+    //Load library
+    Library lib = new Library();
+    var serializer =  new XmlSerializer(typeof(Library));
+    using (StreamReader reader = new("prova.xml"))
+    {
+        lib = (Library) serializer.Deserialize(reader);
+        foreach(Book book in lib.Books)
+        {
+            books.Add(book);
+        }
+    }
+    return books;
+}
+
+List<Book> myBooks = FindAllBooksInFile();
+
+foreach (Book book in myBooks)
+{
+    Console.WriteLine($"{book.Title}, by {book.AuthorName} {book.AuthorSurname}.");
+}
+
+
 

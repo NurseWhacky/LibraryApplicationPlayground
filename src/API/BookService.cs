@@ -32,16 +32,15 @@ namespace API
         {
             if (currentUser.IsAdmin)
             {
-            Book? duplicate = bookRepository.FindAll().Where(d => book.Equals(d)).FirstOrDefault();
-                duplicate is null ? bookRepository.Add(book) : bookRepository.UpdateQuantity();
-
-            }
-            {
-                if(duplicate is not null)
+                Book? duplicate = bookRepository.FindAll()
+                    .Where(d => book.Equals(d))
+                    .FirstOrDefault();
+                if (duplicate is null)
                 {
-                    bookRepository.Update
+                    bookRepository.Add(book);
                 }
-                bookRepository.Add(book);
+                //else
+                //{ bookRepository.UpdateQuantity(duplicate); }
             }
             else
             {
@@ -80,12 +79,11 @@ namespace API
             List<Book> filteredList = new List<Book>();
             if (books.Count() > 0)
             {
-                filteredList = books.ToList().Where(b => (searchObject.Title == null || b.Title.ToLowerInvariant().Contains(searchObject.Title.ToLowerInvariant())) && (searchObject.Author == null || $"{b.AuthorName} {b.AuthorSurname}".ToLowerInvariant().Contains(searchObject.Author)) && (searchObject.Publisher == null || b.Publisher.ToLowerInvariant().Contains(searchObject.Publisher.ToLowerInvariant())))
+                filteredList = books.ToList().Where(b => (searchObject.Title == null || b.Title.ToLowerInvariant().Contains(searchObject.Title.ToLowerInvariant())) && (searchObject.Author == null || $"{b.AuthorName} {b.AuthorSurname}".ToLowerInvariant().Contains(searchObject.Author.ToLowerInvariant()) && (searchObject.Publisher == null || b.Publisher.ToLowerInvariant().Contains(searchObject.Publisher.ToLowerInvariant()))))
                     .SelectMany(b => new Book[] { b })
                     .Distinct()
                     .ToList();
             }
-
             return filteredList;
         }
 

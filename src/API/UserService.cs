@@ -11,7 +11,7 @@ namespace API
 {
     public class UserService
     {
-        private readonly IUserContext? userContext;
+        private readonly LoggedUser? currentUser;
         private readonly IRepository<User> userRepository;
 
         //public UserService()
@@ -19,10 +19,10 @@ namespace API
         //    userRepository = new XmlRepository<User>();
         //}
 
-        public UserService(IRepository<User> userRepository, IUserContext currentUser)
+        public UserService(IRepository<User> userRepository, LoggedUser currentUser)
         {
             this.userRepository = userRepository;
-            this.userContext = currentUser;
+            this.currentUser = currentUser;
         }
 
 

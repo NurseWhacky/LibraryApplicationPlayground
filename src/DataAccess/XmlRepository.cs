@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace DataAccess
 {
-    public class XmlRepository<T> : IRepository<T>  where T : class, new()
+    public class XmlRepository<T> : IRepository<T> where T : class, new()
     {
         private XElement xLibrary;
         private readonly string filePath = "library.xml"; // debug folder in entry point project
@@ -17,9 +17,9 @@ namespace DataAccess
         {
             xLibrary = LoadFile();
             var xList = from el in xLibrary.Elements(typeof(T).Name) select el;
-            foreach(var el in xList)
+            foreach (var el in xList)
             {
-                entities.Add(el.ToEntity<T>())
+                //entities.Add(el.ToEntity<T>());
             }
         }
         private XElement? LoadFile()
@@ -62,22 +62,35 @@ namespace DataAccess
         }
 
         //TODO : check this -> https://learn.microsoft.com/en-us/dotnet/standard/linq/find-descendants-specific-element-name
+        //public List<T> FindAll()
+        //{
+        //    List<T> list = new List<T>();
+        //    IEnumerable<XElement> xElements =
+        //        from el in xLibrary.Descendants(typeof(T).Name)
+        //        select el;
+        //    foreach (var el in xElements)
+        //    {
+        //        //el.ToEntity<T>();
+        //    }
+        //    return list;
+
+        //}
+
         public List<T> FindAll()
         {
-            List<T> list = new List<T>();
-            IEnumerable<XElement> xElements = 
-                from el in xLibrary.Descendants(typeof(T).Name)
-                select el;
-            //foreach (var node in xmlDB.Descendants().Where(d => d.Name == typeof(T).Name))
-            //foreach (XElement element in xElements)
-            //{
-            //    T entity = element.ToEntity<T>();
-            //    list.Add(entity);
+            List<T> entities = new List<T>();
+            //////
 
-            //}
-            return list;
+            var xElements = from el in xLibrary.Descendants(typeof(T).Name) select el;
+            foreach (var el in xElements)
+            {
+               // T entity = el.ToEntity<T>(); // TODO : create some kind of mapper ONCE AND FOR ALL
+               // entities.Add(entity);
+            }
 
+                return entities;
         }
+
 
         public T? FindById(object id)
         {
@@ -100,7 +113,12 @@ namespace DataAccess
             object? entityId = entity.GetType().GetProperty($"{entity.GetType()}Id").GetValue(entity);
             T? entityToUpdate = FindById(entityId);
 
-
+            var properties = typeof(T).GetProperties();
+            foreach (var property in properties)
+            {
+                property.SetValue(entityToUpdate, property.GetValue(entity));
+            }
+            Save();
         }
 
         IEnumerable<T> IRepository<T>.FindAll()
@@ -112,9 +130,5 @@ namespace DataAccess
         {
             throw new NotImplementedException();
         }
-        
-        ////this is for serialization
-        ///
-        //public T Deserialize();
     }
 }

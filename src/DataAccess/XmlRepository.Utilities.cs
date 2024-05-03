@@ -17,9 +17,9 @@ namespace DataAccess
         public static int NextId(Type type)
         {
             XElement lastIds = new XElement("LastUsedIds");
-            
 
-            
+
+            return 1;
         }
 
 
