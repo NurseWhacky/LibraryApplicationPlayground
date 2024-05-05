@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace API.Model
-{
+{ 
     public class Reservation
     {
         public int ReservationId { get; init; }

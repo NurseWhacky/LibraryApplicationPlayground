@@ -19,15 +19,16 @@ namespace DataAccess
             var xList = from el in xLibrary.Elements(typeof(T).Name) select el;
             foreach (var el in xList)
             {
-                //entities.Add(el.ToEntity<T>());
+                entities.Add(el.ToEntity<T>());
             }
         }
         private XElement? LoadFile()
         {
             if (!File.Exists(filePath))
             {
-                //return new XElement();
-                return null;
+                //return new XElement("Library");
+                //return null;
+                throw new FileNotFoundException(filePath);
             }
             return XElement.Load(filePath);
         }
@@ -46,13 +47,14 @@ namespace DataAccess
                 doc.Save(filePath);
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
-
-
         }
 
-        public void Add(T entity)
+        public void Add(T? entity)
         {
-
+            if (entity is not null)
+            {
+                   
+            }
 
         }
 
@@ -79,16 +81,14 @@ namespace DataAccess
         public List<T> FindAll()
         {
             List<T> entities = new List<T>();
-            //////
 
             var xElements = from el in xLibrary.Descendants(typeof(T).Name) select el;
             foreach (var el in xElements)
             {
-               // T entity = el.ToEntity<T>(); // TODO : create some kind of mapper ONCE AND FOR ALL
-               // entities.Add(entity);
+                T? entity = el.ToEntity<T>(); // TODO : create some kind of mapper ONCE AND FOR ALL
+                entities.Add(entity);
             }
-
-                return entities;
+            return entities;
         }
 
 

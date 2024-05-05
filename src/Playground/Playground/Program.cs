@@ -49,6 +49,7 @@ Console.WriteLine(node);
 //}
 
 XDocument newLibrary = Utilities.ReadLibraryFromFile();
+Console.WriteLine(newLibrary);
 
 
 

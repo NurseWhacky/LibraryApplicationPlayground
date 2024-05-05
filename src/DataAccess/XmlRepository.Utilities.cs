@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
@@ -26,7 +27,7 @@ namespace DataAccess
             XElement node = new XElement(typeof(T).Name);
 
             var serializer = new XmlSerializer(typeof(T));
-            using (var )
+            //using (var reader = new )
             return node;
         }
 
