@@ -35,7 +35,7 @@ namespace API
         {
             // TODO : implement check for user role
             return userRepository.FindAll()
-                .FirstOrDefault(u => (u.UserName == username));
+                .FirstOrDefault(u => (u.Username == username));
         }
     }
 }

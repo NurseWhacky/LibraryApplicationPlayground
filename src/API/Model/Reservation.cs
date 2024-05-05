@@ -11,30 +11,47 @@ namespace API.Model
         public int ReservationId { get; init; }
         public int UserId { get; init; }
         public int BookId { get; init; }
-        public DateTime StartDate { get; init; } = DateTime.Now;
+        private DateTime startDate;
+        public DateTime StartDate
+        {
+            get => startDate;
+            set
+            {
+                if (EndDate == default) // 1st-- always true at instantiation time
+                { EndDate = value.AddDays(30); }
+
+                if (value < EndDate) //checks valid enddate (when updating res)
+                { startDate = value; }
+            }
+        }
         private DateTime endDate;
         public DateTime EndDate
         {
             get => endDate;
             set
             {
-                if (value == null)
-                { endDate = StartDate.AddDays(30); }
-                if (value >= StartDate && value <= StartDate.AddDays(30))
-                {
-                    endDate = value;
-                }
-                else
-                { endDate = StartDate.AddDays(30); }
+                if (value >= StartDate)
+                { endDate = value; } // 2nd-- order of assignment matters
             }
         }
 
-        public Reservation()
-        {
-            StartDate = DateTime.Now;
-            EndDate = StartDate.AddDays(30);
-        }
 
-        //public Reservation()
+        public Reservation() {  }
+
+        public Reservation(int id, int bookId, int userId, DateTime startDate, DateTime endDate = default)
+        {
+            ReservationId = id;
+            UserId = userId;
+            BookId = bookId;
+            StartDate = startDate;
+            if(endDate == default)
+            {
+                EndDate = startDate.AddDays(30);
+            }
+            else
+            {
+                EndDate = endDate; 
+            }
+        }
     }
 }

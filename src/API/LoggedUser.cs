@@ -9,7 +9,7 @@ namespace API
 
         public LoggedUser(User user)
         {
-            Username = user.UserName;
+            Username = user.Username;
             IsAdmin = user.Role == UserRole.Admin;
         }
     }

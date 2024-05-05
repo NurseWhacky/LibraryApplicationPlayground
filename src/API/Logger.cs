@@ -24,7 +24,7 @@ namespace API
             { return null; }
 
             User? authenticatedUser = userRepository.FindAll()
-                .Where(u => (u.UserName == credentials.Username && u.Password == credentials.Password))
+                .Where(u => (u.Username == credentials.Username && u.Password == credentials.Password))
                 .FirstOrDefault();
             if (authenticatedUser == null)
             { return null; }

@@ -3,9 +3,13 @@ using API.Model;
 using DataAccess;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using System.Xml.XPath;
 
-XElement library = Utilities.PopulateLibrary();
-Utilities.WriteLibraryToFile(library);
+var boooook = new Book() { /*BookId = 1,*/ AuthorName = "ciccio", AuthorSurname = "pasticcio", Title = "Piccolo Pippo cucciolo eroico", Publisher = "Mondadori" };
+
+Reservation res = new Reservation { BookId = 666, ReservationId = 661, UserId = 61, StartDate = DateTime.Now.AddDays(100) };
+
+Reservation newRes = new Reservation(id: 300, bookId: 31000, userId: 255000, startDate: DateTime.Now.AddDays(15));
 
 List<Book> books = new List<Book>()
 {
@@ -19,57 +23,32 @@ List<Reservation> reservations = new List<Reservation>()
     new Reservation(){ BookId=3, ReservationId=2, UserId=2, StartDate=DateTime.Now}
 };
 List<User> users = new List<User>() {
-    new User() { UserId = 1, UserName = "admin", Password = "pssw", Role = UserRole.Admin },
-    new User() { UserId = 2, UserName = "usr", Password = "pssw", Role = UserRole.User } };
+    new User() { UserId = 1, Username = "admin", Password = "pssw", Role = UserRole.Admin },
+    new User() { UserId = 2, Username = "usr", Password = "pssw", Role = UserRole.User } };
 
 
 Library lib = new Library() { Books = books, Users = users, Reservations = reservations, LastUsedBookId = 3 };
 
-var serializer = new XmlSerializer(typeof(Library));
+XElement node;
+node = Utilities.PopulateNode(newRes);
+Console.WriteLine(node);
 
-using (var writer = new StreamWriter("prova.xml", false))
-{
-    serializer.Serialize(writer, lib);
-}
+//////// add node to document ////////
+///
+//var serializer = new XmlSerializer(typeof(Library));
+//Library deserLib = new();
 
-Library deserLib = new();
+//using (var reader = new StreamReader("prova.xml"))
+//{
+//    deserLib = (Library)serializer.Deserialize(reader);
+//    foreach (Book book in deserLib.Books)
+//    {
+//        Console.WriteLine($"Title: {book.Title}, Author: {book.AuthorName} {book.AuthorSurname}");
+//    }
+//    /// findall sketch method
+//}
 
-using (var reader = new StreamReader("prova.xml"))
-{
-    deserLib = (Library)serializer.Deserialize(reader);
-    foreach (Book book in deserLib.Books)
-    {
-        Console.WriteLine($"Title: {book.Title}, Author: {book.AuthorName} {book.AuthorSurname}");
-    }
-    /// findall sketch method
-}
-
-
-
-List<Book> FindAllBooksInFile()
-{
-    //Declare List<Book>
-    List<Book> books = new List<Book>();
-    //Load library
-    Library lib = new Library();
-    var serializer =  new XmlSerializer(typeof(Library));
-    using (StreamReader reader = new("prova.xml"))
-    {
-        lib = (Library) serializer.Deserialize(reader);
-        foreach(Book book in lib.Books)
-        {
-            books.Add(book);
-        }
-    }
-    return books;
-}
-
-List<Book> myBooks = FindAllBooksInFile();
-
-foreach (Book book in myBooks)
-{
-    Console.WriteLine($"{book.Title}, by {book.AuthorName} {book.AuthorSurname}.");
-}
+XDocument newLibrary = Utilities.ReadLibraryFromFile();
 
 
 

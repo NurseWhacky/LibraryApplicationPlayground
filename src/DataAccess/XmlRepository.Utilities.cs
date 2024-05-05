@@ -1,25 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace DataAccess
 {
     public class Utilities
     {
-        private readonly string dataBase = "Library.xml";
+        private static readonly string dataBase = "Library.xml";
         private readonly string filePath = "lastUsedId.xml";
 
-
-        public static int NextId(Type type)
+        public static XElement PopulateNode<T>(T entity)
         {
-            XElement lastIds = new XElement("LastUsedIds");
+            XElement node = new XElement(typeof(T).Name);
 
+            var props = entity.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance); // only public members of T class
+            foreach (var prop in props)
+            {
+                node.Add(new XElement(prop.Name, prop.GetValue(entity)));
+            }
+            return node;
 
-            return 1;
+        }
+        public static XElement PopulateLibraryFromFile<T>(T entity)
+        {
+            XElement node = new XElement(typeof(T).Name);
+
+            var serializer = new XmlSerializer(typeof(T));
+            using (var )
+            return node;
         }
 
 
@@ -110,16 +118,14 @@ namespace DataAccess
 
         public static void WriteLibraryToFile(XElement library)
         {
-            string filePath = "library.xml";
-
             try
             {
                 // Use FileStream with FileMode.Create to create if not exists, or Open to overwrite
-                using (FileStream fs = File.Open(filePath, FileMode.Create))
+                using (FileStream fs = File.Open(dataBase, FileMode.Create))
                 {
                     library.Save(fs); // Save the XElement to the file stream
                 }
-                Console.WriteLine("Library data written to 'library.xml' successfully.");
+                Console.WriteLine($"Library data written to '{dataBase}' successfully.");
             }
             catch (Exception ex)
             {
@@ -127,23 +133,14 @@ namespace DataAccess
             }
         }
 
-        //private XElement CreateNode<T>(T entity)
-        //{
-        //    XElement newNode = new XElement($"{typeof(T).Name}");
-        //    PropertyInfo[] props = entity.GetType().GetProperties();
-        //    foreach (PropertyInfo prop in props)
-        //    {
-        //        newNode.Add(new XElement($"{prop.Name}", prop.GetValue(entity)));
-        //    }
-        //    return newNode;
-        //}
+        public static XDocument ReadLibraryFromFile()
+        {
+            if(dataBase is not null && File.Exists(dataBase))
+            {
+                return XDocument.Load(dataBase);
+            }
+            return new XDocument(PopulateLibrary()); // default content FOR NOW
+        }
 
-        //public void InitializeLibrary()
-        //{
-        //    XDocument library = new XDocument(
-        //        new XComment("Avanade Library App."),
-        //        new XElement("Library",
-        //            new XElement("Books", ));
-        //}
     }
 }

@@ -8,7 +8,7 @@ namespace API.Model
 {
     public class Book 
     {
-        public int BookId { get; set; }
+        public int BookId { get; init; }
         public string Title { get; set; }
         public string AuthorName { get; set; }
         public string AuthorSurname { get; set; }
@@ -16,6 +16,16 @@ namespace API.Model
         public int Quantity { get; set; }
 
         public Book() { }
+
+        public Book(int bookId, string title, string authorName, string authorSurname, string publisher, int quantity)
+        {
+            BookId = bookId;
+            Title = title;
+            AuthorName = authorName;
+            AuthorSurname = authorSurname;
+            Publisher = publisher;
+            Quantity = quantity;
+        }
 
         public override bool Equals(object? obj)
         {
