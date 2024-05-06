@@ -1,4 +1,5 @@
 ﻿
+using API;
 using API.Model;
 using DataAccess;
 using System.Xml.Linq;
@@ -33,7 +34,7 @@ XElement myXBook = Utilities.FromEntity(new Book(8, "Poba", "MC", "Cavallo", "Se
 
 var entityLibrary = Utilities.ToEntity<Library>(xlibrary);
 
-Console.WriteLine(entityLibrary.LastUsedBookId);
+//Console.WriteLine(entityLibrary.LastUsedBookId);
 foreach (var book in entityLibrary.Books)
 {
     Console.WriteLine($"Id: {book.BookId}, Title: {book.Title}, Author: {book.AuthorName} {book.AuthorSurname}");
@@ -43,27 +44,36 @@ Book cavalloBook = myXBook.ToEntity<Book>();
 //Console.WriteLine($"Id: {cavalloBook.BookId}, Title: {cavalloBook.Title}, Author: {cavalloBook.AuthorName} {cavalloBook.AuthorSurname}");
 
 
-XmlRepository<Book> bookRepo = new XmlRepository<Book>();
+//XmlRepository<Book> bookRepo = new XmlRepository<Book>();
+BookService service = new(new XmlRepository<Book>(), new LoggedUser(new User() { Username = "minka Kelly", UserId = 555, Password = "porcone", Role = UserRole.Admin }));
 
 //bookRepo.Add(cavalloBook);
 
 //foreach(var b in books) bookRepo.Add(b);
 
 //bookRepo.Add(cavalloBook);
-bookRepo.Add(new Book(3, "Scarara", "Franco", "Cappai", "Ottaviu Pallietta", 4));
+var scarara = new Book(3, "Scarara", "Franco", "Cappai", "Ottaviu Pallietta", 4);
+service.AddBook(cavalloBook);
+service.AddBook(scarara);
+//Console.WriteLine(xlibrary);
+service.UpdateQuantity(scarara);
+//service.AddBook(scarara);
+service.AddBook(scarara);
 
-Reservation reservation = new Reservation(34, 55, 99, new DateTime(2024, 3, 14));
 
-IRepository<Reservation> reservationRepo = new XmlRepository<Reservation>();
 
-reservationRepo.Add(reservation);
+//Reservation reservation = new Reservation(34, 55, 99, new DateTime(2024, 3, 14));
 
-foreach(var res in reservations)
-{
-    reservationRepo.Add(res);
-}
+//IRepository<Reservation> reservationRepo = new XmlRepository<Reservation>();
 
-Console.WriteLine(xlibrary);
+//reservationRepo.Add(reservation);
+
+//foreach(var res in reservations)
+//{
+//    reservationRepo.Add(res);
+//}
+
+//Console.WriteLine(xlibrary);
 
 
 //var xLib = Utilities.FromEntity(lib);
