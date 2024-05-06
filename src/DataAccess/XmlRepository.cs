@@ -1,20 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace DataAccess
 {
     public class XmlRepository<T> : IRepository<T> where T : class, new()
     {
-        private XElement xLibrary;
-        private readonly string filePath = "library.xml"; // debug folder in entry point project
-        private List<T> entities = new();
+        private XElement xLibrary; // ==>> Maybe use XDocument to represent ENTIRE library??
+        private readonly string filePath = "Library.xml"; // debug folder in entry point project
+        private List<T> entities; // List of ONLY T entities. TODO: MUST be updated after each operation that changes library state
 
         public XmlRepository()
         {
+            entities = new List<T>();
             xLibrary = LoadFile();
             var xList = from el in xLibrary.Elements(typeof(T).Name) select el;
             foreach (var el in xList)
@@ -22,113 +26,98 @@ namespace DataAccess
                 entities.Add(el.ToEntity<T>());
             }
         }
-        private XElement? LoadFile()
+        private XElement LoadFile()
         {
-            if (!File.Exists(filePath))
-            {
-                //return new XElement("Library");
-                //return null;
-                throw new FileNotFoundException(filePath);
-            }
-            return XElement.Load(filePath);
-        }
-
-        private void WriteFile(XElement doc)
-        {
-            try
-            {
-                if (!File.Exists(filePath))
-                {
-                    // create new file 
-                    using (FileStream fs = File.Create(filePath))
-                    { }
-                }
-                // write doc to new file
-                doc.Save(filePath);
-            }
-            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            return Utilities.ReadFromFile(filePath);            
         }
 
         public void Add(T? entity)
         {
-            if (entity is not null)
+            if (entity is null)
             {
-                   
+                Console.WriteLine($"Could not add {typeof(T).Name}");
             }
+            entities.Add(entity);
 
+            SaveChanges();
         }
 
         public void Delete(T entity)
         {
-            throw new NotImplementedException();
+            // FindById(entityToDeleteId);
+            T ToDelete = FindById((int)typeof(T).GetProperty($"{typeof(T).Name}Id").GetValue(entity));
+
+            // if null return
+            if (ToDelete is null)
+            { return; }
+
+            // Delete entity from entities object
+            entities.Remove(ToDelete);
+
+             SaveChanges();
         }
 
         //TODO : check this -> https://learn.microsoft.com/en-us/dotnet/standard/linq/find-descendants-specific-element-name
-        //public List<T> FindAll()
-        //{
-        //    List<T> list = new List<T>();
-        //    IEnumerable<XElement> xElements =
-        //        from el in xLibrary.Descendants(typeof(T).Name)
-        //        select el;
-        //    foreach (var el in xElements)
-        //    {
-        //        //el.ToEntity<T>();
-        //    }
-        //    return list;
-
-        //}
-
-        public List<T> FindAll()
+        
+        public IEnumerable<T> FindAll()
         {
             List<T> entities = new List<T>();
 
             var xElements = from el in xLibrary.Descendants(typeof(T).Name) select el;
             foreach (var el in xElements)
             {
-                T? entity = el.ToEntity<T>(); // TODO : create some kind of mapper ONCE AND FOR ALL
+                T? entity = el.ToEntity<T>(); 
                 entities.Add(entity);
             }
             return entities;
         }
 
-
-        public T? FindById(object id)
+        public T? FindById(int? id)
         {
-            T? result = FindAll().FirstOrDefault(r => r.GetType() == typeof(T) && r.GetType().GetProperty($"{r.GetType().Name}Id").GetValue(r) == id);
-            return result;
+            PropertyInfo? idProperty = typeof(T).GetProperty($"{typeof(T).Name}Id");
+
+            bool isIdInteger = idProperty == typeof(int);
+
+            if (idProperty == null || idProperty.PropertyType != typeof(int))
+            {
+                return null;
+            }
+            return FindAll().FirstOrDefault(r => isIdInteger && (int)idProperty.GetValue(r) == id);
         }
 
-        public List<T> FindByPattern(string pattern)
+       
+        public void SaveChanges()
         {
-            throw new NotImplementedException();
-        }
+            // Get the root element for this type
+            var root = xLibrary.Element(typeof(T).Name + "s"); 
 
-        public void Save()
-        {
-            throw new NotImplementedException();
+            // Remove the existing elements of this type
+            root.Elements(typeof(T).Name).Remove();
+
+            // Convert each entity in the entities list to an XElement and add it to the root
+            foreach (var entity in entities)
+            {
+                XElement entityElement = Utilities.FromEntity(entity);
+                root.Add(entityElement);
+            }
+
+            // Save the updated library back to the XML file
+            xLibrary.Save(filePath);
+
         }
 
         public void Update(T entity)
         {
-            object? entityId = entity.GetType().GetProperty($"{entity.GetType()}Id").GetValue(entity);
+            int entityId = (int)entity.GetType().GetProperty($"{entity.GetType()}Id").GetValue(entity);
             T? entityToUpdate = FindById(entityId);
 
-            var properties = typeof(T).GetProperties();
+            PropertyInfo[] properties = typeof(T).GetProperties();
             foreach (var property in properties)
             {
                 property.SetValue(entityToUpdate, property.GetValue(entity));
             }
-            Save();
-        }
 
-        IEnumerable<T> IRepository<T>.FindAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<T> IRepository<T>.FindByPattern(string pattern)
-        {
-            throw new NotImplementedException();
+            SaveChanges();
         }
     }
 }

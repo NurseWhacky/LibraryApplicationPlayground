@@ -5,17 +5,13 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
 
-var boooook = new Book() { /*BookId = 1,*/ AuthorName = "ciccio", AuthorSurname = "pasticcio", Title = "Piccolo Pippo cucciolo eroico", Publisher = "Mondadori" };
 
-Reservation res = new Reservation { BookId = 666, ReservationId = 661, UserId = 61, StartDate = DateTime.Now.AddDays(100) };
-
-Reservation newRes = new Reservation(id: 300, bookId: 31000, userId: 255000, startDate: DateTime.Now.AddDays(15));
 
 List<Book> books = new List<Book>()
 {
-        new Book() { BookId=1, AuthorName = "ciccio", AuthorSurname = "pasticcio", Title = "Piccolo Pippo cucciolo eroico", Publisher = "Mondadori" },
-        new Book() {BookId=2, AuthorName = "Papa", AuthorSurname = "Francesco", Title = "La buona novella", Publisher = "Mondadori" },
-        new Book() {BookId=3, AuthorName = "Silvio", AuthorSurname = "Abberluschioni", Title = "I'll be back", Publisher = "Minimum fax" }
+        new Book() { BookId=1, AuthorName = "ciccio", AuthorSurname = "pasticcio", Title = "Piccolo Pippo cucciolo eroico", Publisher = "Mondadori", Quantity = 1 },
+        new Book() {BookId=2, AuthorName = "Papa", AuthorSurname = "Francesco", Title = "La buona novella", Publisher = "Mondadori", Quantity = 1 },
+        new Book() {BookId=3, AuthorName = "Silvio", AuthorSurname = "Abberluschioni", Title = "I'll be back", Publisher = "Minimum fax", Quantity = 1 }
        };
 List<Reservation> reservations = new List<Reservation>()
 {
@@ -28,28 +24,48 @@ List<User> users = new List<User>() {
 
 
 Library lib = new Library() { Books = books, Users = users, Reservations = reservations, LastUsedBookId = 3 };
+XElement xlibrary = Utilities.FromEntity(lib);
 
-XElement node;
-node = Utilities.PopulateNode(newRes);
-Console.WriteLine(node);
+XElement myXBook = Utilities.FromEntity(new Book(8, "Poba", "MC", "Cavallo", "Seppiette", 20));
 
-//////// add node to document ////////
-///
-//var serializer = new XmlSerializer(typeof(Library));
-//Library deserLib = new();
+//Console.WriteLine(xlibrary);
+//Console.WriteLine(myXBook);
 
-//using (var reader = new StreamReader("prova.xml"))
-//{
-//    deserLib = (Library)serializer.Deserialize(reader);
-//    foreach (Book book in deserLib.Books)
-//    {
-//        Console.WriteLine($"Title: {book.Title}, Author: {book.AuthorName} {book.AuthorSurname}");
-//    }
-//    /// findall sketch method
-//}
+var entityLibrary = Utilities.ToEntity<Library>(xlibrary);
 
-XDocument newLibrary = Utilities.ReadLibraryFromFile();
-Console.WriteLine(newLibrary);
+Console.WriteLine(entityLibrary.LastUsedBookId);
+foreach (var book in entityLibrary.Books)
+{
+    Console.WriteLine($"Id: {book.BookId}, Title: {book.Title}, Author: {book.AuthorName} {book.AuthorSurname}");
+}
+
+Book cavalloBook = myXBook.ToEntity<Book>();
+//Console.WriteLine($"Id: {cavalloBook.BookId}, Title: {cavalloBook.Title}, Author: {cavalloBook.AuthorName} {cavalloBook.AuthorSurname}");
 
 
+XmlRepository<Book> bookRepo = new XmlRepository<Book>();
 
+//bookRepo.Add(cavalloBook);
+
+//foreach(var b in books) bookRepo.Add(b);
+
+//bookRepo.Add(cavalloBook);
+bookRepo.Add(new Book(3, "Scarara", "Franco", "Cappai", "Ottaviu Pallietta", 4));
+
+Reservation reservation = new Reservation(34, 55, 99, new DateTime(2024, 3, 14));
+
+IRepository<Reservation> reservationRepo = new XmlRepository<Reservation>();
+
+reservationRepo.Add(reservation);
+
+foreach(var res in reservations)
+{
+    reservationRepo.Add(res);
+}
+
+Console.WriteLine(xlibrary);
+
+
+//var xLib = Utilities.FromEntity(lib);
+
+//Console.WriteLine(xLib);

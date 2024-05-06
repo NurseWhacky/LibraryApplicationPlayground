@@ -14,11 +14,7 @@ namespace API
         private readonly LoggedUser? currentUser;
         private readonly IRepository<User> userRepository;
 
-        //public UserService()
-        //{
-        //    userRepository = new XmlRepository<User>();
-        //}
-
+        
         public UserService(IRepository<User> userRepository, LoggedUser currentUser)
         {
             this.userRepository = userRepository;

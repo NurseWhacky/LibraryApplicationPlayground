@@ -1,34 +1,34 @@
 ﻿using System.Reflection;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace DataAccess
 {
-    public class Utilities
+    public static class Utilities
     {
         private static readonly string dataBase = "Library.xml";
-        private readonly string filePath = "lastUsedId.xml";
 
-        public static XElement PopulateNode<T>(T entity)
-        {
-            XElement node = new XElement(typeof(T).Name);
+        //public static XElement PopulateNode<T>(T entity)
+        //{
+        //    XElement node = new XElement(typeof(T).Name);
 
-            var props = entity.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance); // only public members of T class
-            foreach (var prop in props)
-            {
-                node.Add(new XElement(prop.Name, prop.GetValue(entity)));
-            }
-            return node;
+        //    var props = entity.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance); // only public members of T class
+        //    foreach (var prop in props)
+        //    {
+        //        node.Add(new XElement(prop.Name, prop.GetValue(entity)));
+        //    }
+        //    return node;
 
-        }
-        public static XElement PopulateLibraryFromFile<T>(T entity)
+        //}
+        public static XElement PopulateLibraryFromFile<T>()
         {
             XElement node = new XElement(typeof(T).Name);
 
             var serializer = new XmlSerializer(typeof(T));
             //using (var reader = new )
-            return node;
+                return node;
         }
 
 
@@ -40,7 +40,7 @@ namespace DataAccess
             XElement booksElement = new XElement("Books");
             booksElement.Add(
                 new XElement("Book",
-                    new XElement("Id", 1),
+                    new XElement("BookId", 1),
                     new XElement("Title", "The Lord of the Rings"),
                     new XElement("AuthorName", "J.R.R."),
                     new XElement("AuthorSurname", "Tolkien"),
@@ -50,7 +50,7 @@ namespace DataAccess
             );
             booksElement.Add(
                 new XElement("Book",
-                    new XElement("Id", 2),
+                    new XElement("BookId", 2),
                     new XElement("Title", "Pride and Prejudice"),
                     new XElement("AuthorName", "Jane"),
                     new XElement("AuthorSurname", "Austen"),
@@ -60,7 +60,7 @@ namespace DataAccess
             );
             booksElement.Add(
                 new XElement("Book",
-                    new XElement("Id", 3),
+                    new XElement("BookId", 3),
                     new XElement("Title", "To Kill a Mockingbird"),
                     new XElement("AuthorName", "Harper"),
                     new XElement("AuthorSurname", "Lee"),
@@ -73,15 +73,15 @@ namespace DataAccess
             XElement usersElement = new XElement("Users");
             usersElement.Add(
                 new XElement("User",
-                    new XElement("Id", 1),
+                    new XElement("UserId", 1),
                     new XElement("Username", "user1"),
                     new XElement("Password", "hashed_password1"), // Replace with hashed password
-                    new XElement("Role", "Member")
+                    new XElement("Role", "User")
                 )
             );
             usersElement.Add(
                 new XElement("User",
-                    new XElement("Id", 2),
+                    new XElement("UserId", 2),
                     new XElement("Username", "user2"),
                     new XElement("Password", "hashed_password2"), // Replace with hashed password
                     new XElement("Role", "Admin")
@@ -92,7 +92,7 @@ namespace DataAccess
                     new XElement("Id", 3),
                     new XElement("Username", "user3"),
                     new XElement("Password", "hashed_password3"), // Replace with hashed password
-                    new XElement("Role", "Librarian")
+                    new XElement("Role", "User")
                 )
             );
 
@@ -101,8 +101,8 @@ namespace DataAccess
             reservationsElement.Add(
                 new XElement("Reservation",
                     new XElement("Id", 1),
-                    new XElement("userid", 1),
-                    new XElement("bookid", 1),
+                    new XElement("UserId", 1),
+                    new XElement("BookId", 1),
                     new XElement("StartDate", DateTime.Now.ToString("yyyy-MM-dd")), // Assuming reservation starts today
                     new XElement("EndDate", DateTime.Now.AddDays(30).ToString("yyyy-MM-dd")) // Ends 30 days from now
                 )
@@ -117,7 +117,7 @@ namespace DataAccess
         }
 
 
-        public static void WriteLibraryToFile(XElement library)
+        public static void WriteToFile(XElement library)
         {
             try
             {
@@ -134,14 +134,59 @@ namespace DataAccess
             }
         }
 
-        public static XDocument ReadLibraryFromFile()
+        public static XElement ReadFromFile(string path)
         {
-            if(dataBase is not null && File.Exists(dataBase))
+            try
             {
-                return XDocument.Load(dataBase);
+                return (path is null || path == "") ? new XElement(PopulateLibrary()) : XElement.Load(path);
             }
-            return new XDocument(PopulateLibrary()); // default content FOR NOW
+            catch (FileNotFoundException)
+            {
+                throw new FileNotFoundException($"File '{path}' not found.");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw new UnauthorizedAccessException($"Access to file '{path}' is denied.");
+            }
+            catch (XmlException)
+            {
+                throw new XmlException($"The file '{path}' is not a well-formed XML.");
+            }
+           
         }
 
+        
+        public static T? ToEntity<T>(this XElement element) where T : class, new()
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            using (var xmlReader = element.CreateReader())
+            {
+                return (T)serializer.Deserialize(xmlReader);
+            }
+        }
+
+
+        public static XElement FromEntity<T>(T entity) where T : class, new()
+        {
+            if (entity is null)
+            { throw new ArgumentNullException(nameof(entity)); }
+
+            var element = new XElement(typeof(T).Name);
+            var emptyNamespaces = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
+            var settings = new XmlWriterSettings { OmitXmlDeclaration = true };
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var writer = new StreamWriter(memoryStream))
+                {
+                    var xmlSerializer = new XmlSerializer(typeof(T));
+                    xmlSerializer.Serialize(writer, entity, emptyNamespaces);
+                }
+                element = XElement.Parse(Encoding.UTF8.GetString(memoryStream.ToArray()));
+
+            }
+            Console.WriteLine($"entity {nameof(entity)} successfully converted to XElement");
+            return element;
+
+        }
     }
 }
