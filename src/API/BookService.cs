@@ -31,8 +31,10 @@ namespace API
                 if (duplicate is null)
                 {
                     bookRepository.Add(book);
+                    bookRepository.SaveChanges();
                 }
                 else
+                    Console.WriteLine($"Libro con id {duplicate.BookId} già presente in libreria");
                 { UpdateQuantity(duplicate); }
             }
             else
@@ -84,12 +86,14 @@ namespace API
 
         public void UpdateQuantity(Book duplicate)
         {
-            Book bookToIncrement = bookRepository.FindById(duplicate.BookId);
+            Book? bookToIncrement = bookRepository.FindById(duplicate.BookId);
             if (bookToIncrement != null && bookToIncrement.Equals(duplicate))
             {
-                bookToIncrement.Quantity += 1;
-                bookRepository.Update(bookToIncrement);
-                Console.WriteLine($"Quantity of book '{bookToIncrement.Title}' incremented: total copies = {bookToIncrement.Quantity}");
+                //bookToIncrement.Quantity += 1;
+                duplicate.Quantity += 1;
+                bookRepository.Update(duplicate);
+                bookRepository.SaveChanges();
+                Console.WriteLine($"Quantity of book '{duplicate.Title}' incremented: total copies = {duplicate.Quantity}");
             }
         }
 
@@ -100,6 +104,7 @@ namespace API
             {
 
                 bookRepository.Update(book);
+                bookRepository.SaveChanges();
             }
         }
 
@@ -109,6 +114,7 @@ namespace API
             if (currentUser.IsAdmin)
             {
                 bookRepository.Delete(book);
+                bookRepository.SaveChanges();
             }
         }
 

@@ -4,6 +4,7 @@ namespace API
 {
     public class LoggedUser
     {
+        public int Id { get; set; }
         public string Username { get; set; }
         public bool IsAdmin { get; set; }
 
@@ -11,6 +12,7 @@ namespace API
         {
             Username = user.Username;
             IsAdmin = user.Role == UserRole.Admin;
+            Id = user.UserId;
         }
     }
 }

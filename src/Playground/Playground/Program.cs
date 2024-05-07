@@ -52,13 +52,13 @@ BookService service = new(new XmlRepository<Book>(), new LoggedUser(new User() {
 //foreach(var b in books) bookRepo.Add(b);
 
 //bookRepo.Add(cavalloBook);
-var scarara = new Book(3, "Scarara", "Franco", "Cappai", "Ottaviu Pallietta", 4);
-service.AddBook(cavalloBook);
+var scarara = new Book(3, "Scararararar", "Franco", "Cappai", "Ottaviu Pallietta", 4);
+//service.AddBook(cavalloBook);
 service.AddBook(scarara);
 //Console.WriteLine(xlibrary);
-service.UpdateQuantity(scarara);
+//service.UpdateQuantity(scarara);
 //service.AddBook(scarara);
-service.AddBook(scarara);
+//service.AddBook(scarara);
 
 
 

@@ -28,7 +28,7 @@ namespace DataAccess
         }
         private XElement LoadFile()
         {
-            return Utilities.ReadFromFile(filePath);            
+            return Utilities.ReadFromFile(filePath);
         }
 
         public void Add(T? entity)
@@ -39,7 +39,7 @@ namespace DataAccess
             }
             entities.Add(entity);
 
-            SaveChanges();
+            //SaveChanges();
         }
 
         public void Delete(T entity)
@@ -54,11 +54,11 @@ namespace DataAccess
             // Delete entity from entities object
             entities.Remove(ToDelete);
 
-             SaveChanges();
+            //SaveChanges();
         }
 
         //TODO : check this -> https://learn.microsoft.com/en-us/dotnet/standard/linq/find-descendants-specific-element-name
-        
+
         public IEnumerable<T> FindAll()
         {
             List<T> entities = new List<T>();
@@ -66,7 +66,7 @@ namespace DataAccess
             var xElements = from el in xLibrary.Descendants(typeof(T).Name) select el;
             foreach (var el in xElements)
             {
-                T? entity = el.ToEntity<T>(); 
+                T? entity = el.ToEntity<T>();
                 entities.Add(entity);
             }
             return entities;
@@ -76,7 +76,7 @@ namespace DataAccess
         {
             PropertyInfo? idProperty = typeof(T).GetProperty($"{typeof(T).Name}Id");
 
-            bool isIdInteger = idProperty == typeof(int);
+            bool isIdInteger = idProperty.PropertyType == typeof(int);
 
             if (idProperty == null || idProperty.PropertyType != typeof(int))
             {
@@ -85,14 +85,26 @@ namespace DataAccess
             return FindAll().FirstOrDefault(r => isIdInteger && (int)idProperty.GetValue(r) == id);
         }
 
-       
+        public IEnumerable<T>? FindByEntityId(int? entityId, Type entityType)
+        {
+            PropertyInfo? entityIdProperty = entityType.GetProperty($"{entityType.Name}Id");
+
+            if (entityIdProperty == null || entityIdProperty.PropertyType != typeof(int))// || !typeof(T).GetProperties().Contains(typeof(T).GetProperty(entityIdProperty.Name)))
+            {
+                // error message specific for invalid id
+                return null;
+            }
+            return FindAll().Where(result => entityId == (int?) entityIdProperty.GetValue(result));
+        }
+
+
         public void SaveChanges()
         {
             // Get the root element for this type
-            var root = xLibrary.Element(typeof(T).Name + "s"); 
+            var root = xLibrary.Element(typeof(T).Name + "s");
 
             // Remove the existing elements of this type
-            root.Elements(typeof(T).Name).Remove();
+            //root.Elements(typeof(T).Name).Remove();
 
             // Convert each entity in the entities list to an XElement and add it to the root
             foreach (var entity in entities)
@@ -108,7 +120,7 @@ namespace DataAccess
 
         public void Update(T entity)
         {
-            int entityId = (int)entity.GetType().GetProperty($"{entity.GetType()}Id").GetValue(entity);
+            int entityId = (int)entity.GetType().GetProperty($"{entity.GetType().Name}Id").GetValue(entity);
             T? entityToUpdate = FindById(entityId);
 
             PropertyInfo[] properties = typeof(T).GetProperties();
@@ -117,7 +129,7 @@ namespace DataAccess
                 property.SetValue(entityToUpdate, property.GetValue(entity));
             }
 
-            SaveChanges();
+            //SaveChanges();
         }
     }
 }

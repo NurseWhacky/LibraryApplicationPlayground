@@ -20,7 +20,22 @@ namespace API
 
         public List<Reservation> GetReservationsByBookId(int bookId)
         {
-            throw new NotImplementedException(); 
+            return repository.FindByEntityId(bookId, typeof(Book)).ToList();
+        }
+
+        public List<Reservation> GetReservationsByUserId(int userId)
+        {
+            if (loggedUser.IsAdmin)
+            {
+                return repository.FindByEntityId(userId, typeof(User)).ToList();
+            }
+            // TODO: implement checks and error messages and stuff
+            return new List<Reservation>();
+        }
+
+        public List<Reservation> GetAllReservations()
+        {
+            return repository.FindAll().ToList();
         }
     }
 }

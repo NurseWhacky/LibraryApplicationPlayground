@@ -10,7 +10,7 @@ namespace DataAccess
     {
         IEnumerable<T> FindAll();
         T FindById(int? id);
-        //IEnumerable<T> FindByPattern(string pattern);
+        IEnumerable<T> FindByEntityId(int? id, Type type);
         void Add(T entity);
         void Update(T entity);
         void Delete(T entity);
