@@ -7,7 +7,8 @@ using System.Xml.Serialization;
 
 namespace API.Model
 {
-    public class Book 
+    [XmlRoot("Book")]
+    public class Book
     {
         public int BookId { get; init; }
         public string Title { get; set; }
@@ -30,7 +31,7 @@ namespace API.Model
 
         public override bool Equals(object? obj)
         {
-            if(obj is null || obj is not Book)
+            if (obj is null || obj is not Book)
             {
                 return false;
             }

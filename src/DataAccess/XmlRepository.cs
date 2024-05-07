@@ -20,10 +20,11 @@ namespace DataAccess
         {
             entities = new List<T>();
             xLibrary = LoadFile();
-            var xList = from el in xLibrary.Elements(typeof(T).Name) select el;
+            var xList = from el in xLibrary.Descendants($"{typeof(T).Name}") select el;
             foreach (var el in xList)
             {
-                entities.Add(el.ToEntity<T>());
+                T entity = el.ToEntity<T>();
+                entities.Add(entity);
             }
         }
         private XElement LoadFile()
@@ -45,14 +46,14 @@ namespace DataAccess
         public void Delete(T entity)
         {
             // FindById(entityToDeleteId);
-            T ToDelete = FindById((int)typeof(T).GetProperty($"{typeof(T).Name}Id").GetValue(entity));
+            T toDelete = FindById((int)typeof(T).GetProperty($"{typeof(T).Name}Id").GetValue(entity));
 
             // if null return
-            if (ToDelete is null)
+            if (toDelete is null)
             { return; }
 
             // Delete entity from entities object
-            entities.Remove(ToDelete);
+            entities.Remove(toDelete);
 
             //SaveChanges();
         }
@@ -101,17 +102,20 @@ namespace DataAccess
         public void SaveChanges()
         {
             // Get the root element for this type
-            var root = xLibrary.Element(typeof(T).Name + "s");
+            XElement? root = xLibrary.Element($"{typeof(T).Name}s");
 
-            // Remove the existing elements of this type
-            //root.Elements(typeof(T).Name).Remove();
+            // Delete existing xlibrary
+            xLibrary.Elements($"{typeof(T).Name}").Remove();
 
             // Convert each entity in the entities list to an XElement and add it to the root
             foreach (var entity in entities)
             {
                 XElement entityElement = Utilities.FromEntity(entity);
                 root.Add(entityElement);
+                xLibrary.Elements(typeof(T).Name).Append(entityElement);
             }
+
+            
 
             // Save the updated library back to the XML file
             xLibrary.Save(filePath);

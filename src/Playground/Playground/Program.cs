@@ -25,40 +25,39 @@ List<User> users = new List<User>() {
 
 
 Library lib = new Library() { Books = books, Users = users, Reservations = reservations, LastUsedBookId = 3 };
+
+Utilities.WriteToFile(Utilities.FromEntity(lib));
 XElement xlibrary = Utilities.FromEntity(lib);
 
-XElement myXBook = Utilities.FromEntity(new Book(8, "Poba", "MC", "Cavallo", "Seppiette", 20));
+//XElement myXBook = Utilities.FromEntity(new Book(8, "Poba", "MC", "Cavallo", "Seppiette", 20));
 
 //Console.WriteLine(xlibrary);
 //Console.WriteLine(myXBook);
 
-var entityLibrary = Utilities.ToEntity<Library>(xlibrary);
+//var entityLibrary = Utilities.ToEntity<Library>(xlibrary);
 
 //Console.WriteLine(entityLibrary.LastUsedBookId);
-foreach (var book in entityLibrary.Books)
-{
-    Console.WriteLine($"Id: {book.BookId}, Title: {book.Title}, Author: {book.AuthorName} {book.AuthorSurname}");
-}
+//foreach (var book in entityLibrary.Books)
+//{
+//    Console.WriteLine($"Id: {book.BookId}, Title: {book.Title}, Author: {book.AuthorName} {book.AuthorSurname}");
+//}
 
-Book cavalloBook = myXBook.ToEntity<Book>();
+//Book cavalloBook = myXBook.ToEntity<Book>();
 //Console.WriteLine($"Id: {cavalloBook.BookId}, Title: {cavalloBook.Title}, Author: {cavalloBook.AuthorName} {cavalloBook.AuthorSurname}");
 
 
-//XmlRepository<Book> bookRepo = new XmlRepository<Book>();
-BookService service = new(new XmlRepository<Book>(), new LoggedUser(new User() { Username = "minka Kelly", UserId = 555, Password = "porcone", Role = UserRole.Admin }));
+XmlRepository<Book> bookRepo = new XmlRepository<Book>();
+BookService service = new(bookRepo, new LoggedUser(new User() { Username = "Piseddu", UserId = 555, Password = "porcone", Role = UserRole.Admin }));
 
 //bookRepo.Add(cavalloBook);
 
 //foreach(var b in books) bookRepo.Add(b);
 
 //bookRepo.Add(cavalloBook);
-var scarara = new Book(3, "Scararararar", "Franco", "Cappai", "Ottaviu Pallietta", 4);
+var madMen = new Book(7, "Mad Men", "Don", "Draper", "Sterling Cooper Draper Pryce", 2);
 //service.AddBook(cavalloBook);
-service.AddBook(scarara);
+service.AddBook(madMen);
 //Console.WriteLine(xlibrary);
-//service.UpdateQuantity(scarara);
-//service.AddBook(scarara);
-//service.AddBook(scarara);
 
 
 
