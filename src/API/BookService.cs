@@ -76,6 +76,7 @@ namespace API
         }
 
         // TODO : Implement reservationservice methods and test them!
+        // TODO : logic in here is flawed, fix it
         public bool CheckAvailability(Book b)
         {
             List<Reservation> activeReservations = reservationService.GetReservationsByBookId(b.BookId)
@@ -88,21 +89,22 @@ namespace API
 
         public void UpdateQuantity(Book duplicate)
         {
-            //Book? bookToIncrement = bookRepository.FindById(duplicate.BookId);
-            //if (bookToIncrement != null && bookToIncrement.Equals(duplicate))
-            if (duplicate != null )//&& bookToIncrement.Equals(duplicate))
-            {
-                duplicate.Quantity += 1;
-                //duplicate.Quantity += 1;
-                bookRepository.Update(duplicate);
-                bookRepository.SaveChanges();
-                Console.WriteLine($"Quantity of book '{duplicate.Title}' incremented: total copies = {duplicate.Quantity}");
-            }
-            else
-            {
-                throw new Exception("!!!!!!");
+            // 1) create new book object from duplicate
+            ++duplicate.Quantity;
+            bookRepository.Update(duplicate);
+            
+            //if (duplicate != null)
+            //{
+            //    duplicate.Quantity += 1;
+            //    bookRepository.Update(duplicate);
+            //    bookRepository.SaveChanges();
+            //    Console.WriteLine($"Quantity of book '{duplicate.Title}' incremented: total copies = {duplicate.Quantity}");
+            //}
+            //else
+            //{
+            //    throw new Exception("!!!!!!");
 
-            }
+            //}
         }
 
         public void EditBook(Book book)

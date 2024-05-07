@@ -10,25 +10,13 @@ namespace DataAccess
     {
         private static readonly string dataBase = "Library.xml";
 
-        //public static XElement PopulateNode<T>(T entity)
-        //{
-        //    XElement node = new XElement(typeof(T).Name);
-
-        //    var props = entity.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance); // only public members of T class
-        //    foreach (var prop in props)
-        //    {
-        //        node.Add(new XElement(prop.Name, prop.GetValue(entity)));
-        //    }
-        //    return node;
-
-        //}
         public static XElement PopulateLibraryFromFile<T>()
         {
             XElement node = new XElement(typeof(T).Name);
 
             var serializer = new XmlSerializer(typeof(T));
             //using (var reader = new )
-                return node;
+            return node;
         }
 
 
@@ -152,10 +140,10 @@ namespace DataAccess
             {
                 throw new XmlException($"The file '{path}' is not a well-formed XML.");
             }
-           
+
         }
 
-        
+
         public static T? ToEntity<T>(this XElement element) where T : class, new()
         {
             XmlSerializer serializer = new XmlSerializer(typeof(T));
