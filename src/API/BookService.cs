@@ -46,6 +46,18 @@ namespace API
 
         }
 
+        public void AddBook(BookDTO book)
+        {
+            if(!currentUser.IsAdmin)
+            { Console.WriteLine("You are not authorized to perform this action."); }
+            else
+            {
+                Book bookToAdd = new Book() {Title = book.Title,  AuthorName = book.AuthorName, AuthorSurname = book.AuthorSurname, Publisher = book.Publisher, Quantity = book.Qty, BookId = Utilities.NextBookId};
+                bookRepository.Add(bookToAdd);
+                bookRepository.SaveChanges();
+            }
+        }
+
         public List<Book> GetAllBooks()
         {
             return bookRepository.FindAll().ToList();
@@ -68,7 +80,7 @@ namespace API
 
             if (searchObject.IsAvailable)
             {
-                return filtered.Where(b => CheckAvailability(b))
+                return filtered.Where(b => IsBookAvailable(b))
                     .SelectMany(b => new Book[] { b })
                     .ToList();
             }
@@ -77,14 +89,19 @@ namespace API
 
         // TODO : Implement reservationservice methods and test them!
         // TODO : logic in here is flawed, fix it
-        public bool CheckAvailability(Book b)
+        public bool IsBookAvailable(Book book)
         {
-            List<Reservation> activeReservations = reservationService.GetReservationsByBookId(b.BookId)
+            List<Reservation> activeReservations = reservationService.GetReservationsByBookId(book.BookId)
                 .Where(res => res.EndDate > DateTime.Now)
                 .ToList();
 
-            return activeReservations.Count() < b.Quantity;
+            return activeReservations.Count() < book.Quantity;
 
+        }
+
+        public bool IsBookDeletable(Book book)
+        {
+            return reservationService.GetReservationsByBookId(book.BookId).Any(res => res.EndDate > DateTime.Now);
         }
 
         public void UpdateQuantity(Book duplicate)

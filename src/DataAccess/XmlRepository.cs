@@ -20,12 +20,12 @@ namespace DataAccess
         {
             entities = new List<T>();
             xLibrary = LoadFile();
-            var xList = from el in xLibrary.Descendants($"{typeof(T).Name}") select el;
-            foreach (var el in xList)
-            {
-                T entity = el.ToEntity<T>();
-                entities.Add(entity);
-            }
+            //var xList = from el in xLibrary.Descendants($"{typeof(T).Name}") select el;
+            //foreach (var el in xList)
+            //{
+            //    T entity = el.ToEntity<T>();
+            //    entities.Add(entity);
+            //}
         }
         private XElement LoadFile()
         {

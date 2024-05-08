@@ -9,6 +9,35 @@ namespace DataAccess
     public static class Utilities
     {
         private static readonly string dataBase = "Library.xml";
+        private static int nextBookId = 0;
+        public static int NextBookId
+        {
+            get
+            {
+                if (nextBookId == 0)
+                {
+                    GetLastUsedId(out XAttribute? idAttribute, out int lastUsedId);
+                    NextBookId = ++lastUsedId;
+                    idAttribute.SetValue(nextBookId.ToString());
+                    return nextBookId;
+
+                }
+                return nextBookId;
+            }
+            private set
+            {
+                GetLastUsedId(out XAttribute? idAttribute, out int lastUsedId);
+                nextBookId = ++lastUsedId;
+                //nextBookId = value;
+
+            }
+        }
+
+        private static void GetLastUsedId(out XAttribute? idAttribute, out int lastId)
+        {
+            idAttribute = XDocument.Load(dataBase).Root.Attribute("LastBookId");
+            int.TryParse(idAttribute.Value, out lastId);
+        }
 
         public static XElement PopulateLibraryFromFile<T>()
         {
