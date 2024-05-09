@@ -13,7 +13,7 @@ namespace DataAccess
     public class XmlRepository<T> : IRepository<T> where T : class, new()
     {
         private XElement xLibrary; // ==>> Maybe use XDocument to represent ENTIRE library??
-        private readonly string filePath = "Library.xml"; // debug folder in entry point project
+        //private readonly string filePath = "Library.xml"; // debug folder in entry point project
         private List<T> entities; // List of ONLY T entities. TODO: MUST be updated after each operation that changes library state
 
         public XmlRepository()
@@ -29,7 +29,7 @@ namespace DataAccess
         }
         private XElement LoadFile()
         {
-            return Utilities.ReadFromFile(filePath);
+            return Utilities.ReadFromFile();
         }
 
         public void Add(T? entity)
@@ -39,9 +39,32 @@ namespace DataAccess
                 Console.WriteLine($"Could not add {typeof(T).Name}");
             }
             entities.Add(entity);
-
-            //SaveChanges();
         }
+
+        //private void UpdateLastUsedId()
+        //{
+        //    XElement? root = xLibrary.Element($"{typeof(T).Name}s");
+        //    string idPropertyName = $"{typeof(T).Name}Id";
+        //    PropertyInfo propertyInfo = typeof(T).GetProperty(idPropertyName);
+        //    if (propertyInfo == null)
+        //    {
+        //        throw new InvalidOperationException($"Entity of type {typeof(T).Name} doesn't have a property named {idPropertyName}");
+        //    }
+
+        //    int lastUsedId = entities.Cast<dynamic>().Max(e => (int) propertyInfo.GetValue(e));
+
+        //    XAttribute lastUsedIdAttribute = root.Attribute("LastUsedId");
+        //    if(lastUsedId != null)
+        //    {
+        //        lastUsedIdAttribute.SetValue(lastUsedId.ToString());
+        //    }
+        //    else
+        //    {
+        //        root.Add(new XAttribute("LastUsedId", lastUsedId.ToString()));
+
+        //    }
+
+        //}
 
         public void Delete(T entity)
         {
@@ -118,7 +141,7 @@ namespace DataAccess
             
 
             // Save the updated library back to the XML file
-            xLibrary.Save(filePath);
+            xLibrary.Save(Utilities.DataBase);
 
         }
 

@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace API
 {
-    public class Logger : ILogger
+    public class LoginService : ILogger
     {
         private readonly IRepository<User> userRepository;
 
-        public Logger(IRepository<User> userRepository)
+        public LoginService(IRepository<User> userRepository)
         {
             this.userRepository = userRepository;
         }

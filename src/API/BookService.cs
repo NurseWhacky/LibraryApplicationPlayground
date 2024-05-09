@@ -53,6 +53,7 @@ namespace API
             else
             {
                 Book bookToAdd = new Book() {Title = book.Title,  AuthorName = book.AuthorName, AuthorSurname = book.AuthorSurname, Publisher = book.Publisher, Quantity = book.Qty, BookId = Utilities.NextBookId};
+                Utilities.NextBookId++;
                 bookRepository.Add(bookToAdd);
                 bookRepository.SaveChanges();
             }

@@ -9,6 +9,9 @@ namespace DataAccess
     public static class Utilities
     {
         private static readonly string dataBase = "Library.xml";
+        public static string DataBase { get => dataBase; }
+        private static XDocument doc = XDocument.Load(dataBase);
+        private static XAttribute? idAttribute = doc.Root.Attribute("LastBookId");            
         private static int nextBookId = 0;
         public static int NextBookId
         {
@@ -16,28 +19,34 @@ namespace DataAccess
             {
                 if (nextBookId == 0)
                 {
-                    GetLastUsedId(out XAttribute? idAttribute, out int lastUsedId);
-                    NextBookId = ++lastUsedId;
-                    idAttribute.SetValue(nextBookId.ToString());
-                    return nextBookId;
+                    GetLastUsedId(out int lastUsedId);
+                    nextBookId = ++lastUsedId;
 
                 }
                 return nextBookId;
             }
-            private set
+            set
             {
-                GetLastUsedId(out XAttribute? idAttribute, out int lastUsedId);
-                nextBookId = ++lastUsedId;
-                //nextBookId = value;
-
+                nextBookId = value;
+                UpdateLastUsedId(nextBookId);
             }
         }
 
-        private static void GetLastUsedId(out XAttribute? idAttribute, out int lastId)
+        private static void GetLastUsedId(out int lastId)
         {
-            idAttribute = XDocument.Load(dataBase).Root.Attribute("LastBookId");
+            
             int.TryParse(idAttribute.Value, out lastId);
         }
+
+        private static void UpdateLastUsedId(int newId)
+        {
+            //XDocument doc = XDocument.Load(dataBase);
+            //XAttribute idAttribute = doc.Root.Attribute("LastBookId");
+            idAttribute.SetValue(newId.ToString());
+            doc.Save(dataBase);
+        }
+
+
 
         public static XElement PopulateLibraryFromFile<T>()
         {
@@ -151,23 +160,23 @@ namespace DataAccess
             }
         }
 
-        public static XElement ReadFromFile(string path)
+        public static XElement ReadFromFile()
         {
             try
             {
-                return (path is null || path == "") ? new XElement(PopulateLibrary()) : XElement.Load(path);
+                return (dataBase is null || dataBase == "") ? new XElement(PopulateLibrary()) : XElement.Load(dataBase);
             }
             catch (FileNotFoundException)
             {
-                throw new FileNotFoundException($"File '{path}' not found.");
+                throw new FileNotFoundException($"File '{dataBase}' not found.");
             }
             catch (UnauthorizedAccessException)
             {
-                throw new UnauthorizedAccessException($"Access to file '{path}' is denied.");
+                throw new UnauthorizedAccessException($"Access to file '{dataBase}' is denied.");
             }
             catch (XmlException)
             {
-                throw new XmlException($"The file '{path}' is not a well-formed XML.");
+                throw new XmlException($"The file '{dataBase}' is not a well-formed XML.");
             }
 
         }
