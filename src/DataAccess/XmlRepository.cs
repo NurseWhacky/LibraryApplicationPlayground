@@ -15,12 +15,45 @@ namespace DataAccess
         private XElement xLibrary;
         public XElement XLibrary { get { return xLibrary; } }
         private List<T> entities; // TODO: MUST be updated after each operation that changes library state
+        private int nextBookId = 0;
+
+        public int NextBookId()
+        {
+            if (nextBookId == 0)
+            {
+                // TODO: Da rivedere -> non modifica attributo su file!
+                Utilities.GetLastUsedId<T>(out int lastUsedId);
+                nextBookId = ++lastUsedId;
+                Utilities.UpdateLastUsedId<T>(lastUsedId);
+            }
+            return nextBookId;
+
+        }
+            //get
+            //{
+            //    if (nextBookId == 0)
+            //    {
+            //        //GetLastUsedId(out int lastUsedId);
+            //        Utilities.GetLastUsedId<T>(out int lastUsedId);
+            //        nextBookId = lastUsedId++;
+            //        //nextBookId++;
+
+            //    }
+            //    return nextBookId;
+            //}
+            //set
+            //{
+            //    nextBookId = value;
+            //    Utilities.UpdateLastUsedId<T>(value);
+            //}
+        //}?
 
         public XmlRepository()
         {
             entities = new List<T>();
             xLibrary = LoadFile();
-            foreach (var el in xLibrary.Elements($"{typeof(T).Name}"))
+            // now it works!
+            foreach (var el in xLibrary.Descendants($"{typeof(T).Name}"))
             {
                 T entity = el.ToEntity<T>();
                 entities.Add(entity);
@@ -58,15 +91,15 @@ namespace DataAccess
 
         public IEnumerable<T> FindAll()
         {
-            List<T> entities = new List<T>();
+            List<T> allEntities = new List<T>();
 
             var xElements = from el in xLibrary.Descendants(typeof(T).Name) select el;
             foreach (var el in xElements)
             {
                 T? entity = el.ToEntity<T>();
-                entities.Add(entity);
+                allEntities.Add(entity);
             }
-            return entities;
+            return allEntities;
         }
 
         public T? FindById(int? id)
@@ -79,7 +112,7 @@ namespace DataAccess
             {
                 return null;
             }
-            return FindAll().FirstOrDefault(r => isIdInteger && (int)idProperty.GetValue(r) == id);
+            return FindAll().FirstOrDefault(result => isIdInteger && (int)idProperty.GetValue(result) == id);
         }
 
         public IEnumerable<T>? FindByEntityId(int? entityId, Type entityType)
@@ -128,5 +161,6 @@ namespace DataAccess
             entities.Remove(entityToUpdate);
             entities.Add(entity);
         }
+
     }
 }

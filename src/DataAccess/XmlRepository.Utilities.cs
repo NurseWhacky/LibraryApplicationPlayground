@@ -12,38 +12,22 @@ namespace DataAccess
         public static string DataBase { get => dataBase; }
         private static XDocument doc;// = XDocument.Load(dataBase);
         private static XAttribute? idAttribute;// = doc.Root.Attribute("LastBookId");            
-        private static int nextBookId = 0;
-        public static int NextBookId
-        {
-            get
-            {
-                if (nextBookId == 0)
-                {
-                    GetLastUsedId(out int lastUsedId);
-                    nextBookId = ++lastUsedId;
+        
 
-                }
-                return nextBookId;
-            }
-            set
-            {
-                nextBookId = value;
-                UpdateLastUsedId(nextBookId);
-            }
-        }
-
-        private static void GetLastUsedId(out int lastId)
+        public static void GetLastUsedId<T>(out int lastId)
         {
+            string entityType = typeof(T).Name;
             doc = XDocument.Load(dataBase);
-            idAttribute = doc.Root.Attribute("LastBookId");
+            idAttribute = doc.Root.Attribute($"Last{entityType}Id");
 
             int.TryParse(idAttribute.Value, out lastId);
         }
 
-        private static void UpdateLastUsedId(int newId)
+        public static void UpdateLastUsedId<T>(int newId)
         {
+            string entityType = typeof(T).Name;
             doc = XDocument.Load(dataBase);
-            idAttribute = doc.Root.Attribute("LastBookId");
+            idAttribute = doc.Root.Attribute($"Last{entityType}Id");
             idAttribute.SetValue(newId.ToString());
             doc.Save(dataBase);
         }

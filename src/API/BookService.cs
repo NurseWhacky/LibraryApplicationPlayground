@@ -48,12 +48,12 @@ namespace API
 
         public void AddBook(BookDTO book)
         {
-            if(!currentUser.IsAdmin)
+            if (!currentUser.IsAdmin)
             { Console.WriteLine("You are not authorized to perform this action."); }
             else
             {
-                Book bookToAdd = new Book() {Title = book.Title,  AuthorName = book.AuthorName, AuthorSurname = book.AuthorSurname, Publisher = book.Publisher, Quantity = book.Qty, BookId = Utilities.NextBookId};
-                Utilities.NextBookId++;
+                Book bookToAdd = new Book() { Title = book.Title, AuthorName = book.AuthorName, AuthorSurname = book.AuthorSurname, Publisher = book.Publisher, Quantity = book.Qty, BookId = bookRepository.NextBookId()};
+                //Utilities.NextBookId += 1;
                 bookRepository.Add(bookToAdd);
                 bookRepository.SaveChanges();
             }
@@ -110,7 +110,7 @@ namespace API
             // 1) create new book object from duplicate
             ++duplicate.Quantity;
             bookRepository.Update(duplicate);
-            
+
             //if (duplicate != null)
             //{
             //    duplicate.Quantity += 1;

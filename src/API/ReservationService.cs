@@ -61,7 +61,7 @@ namespace API
             }
             else
             {
-                repository.Add(new Reservation(Utilities.NextBookId, book.BookId, loggedUser.Id, DateTime.Now));
+                repository.Add(new Reservation(repository.NextBookId(), book.BookId, loggedUser.Id, DateTime.Now));
                 repository.SaveChanges();
             }
         }

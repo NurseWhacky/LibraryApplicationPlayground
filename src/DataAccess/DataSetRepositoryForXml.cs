@@ -70,5 +70,10 @@ namespace DataAccess
         {
             throw new NotImplementedException();
         }
+
+        public int NextBookId()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
