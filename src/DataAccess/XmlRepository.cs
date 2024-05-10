@@ -12,24 +12,57 @@ namespace DataAccess
 {
     public class XmlRepository<T> : IRepository<T> where T : class, new()
     {
-        private XElement xLibrary; // ==>> Maybe use XDocument to represent ENTIRE library??
-        private readonly string filePath = "Library.xml"; // debug folder in entry point project
-        private List<T> entities; // List of ONLY T entities. TODO: MUST be updated after each operation that changes library state
+        private XElement xLibrary;
+        public XElement XLibrary { get { return xLibrary; } }
+        private List<T> entities; // TODO: MUST be updated after each operation that changes library state
+        private int nextBookId = 0;
+
+        public int NextBookId()
+        {
+            if (nextBookId == 0)
+            {
+                // TODO: Da rivedere -> non modifica attributo su file!
+                Utilities.GetLastUsedId<T>(out int lastUsedId);
+                nextBookId = ++lastUsedId;
+                Utilities.UpdateLastUsedId<T>(lastUsedId);
+            }
+            return nextBookId;
+
+        }
+            //get
+            //{
+            //    if (nextBookId == 0)
+            //    {
+            //        //GetLastUsedId(out int lastUsedId);
+            //        Utilities.GetLastUsedId<T>(out int lastUsedId);
+            //        nextBookId = lastUsedId++;
+            //        //nextBookId++;
+
+            //    }
+            //    return nextBookId;
+            //}
+            //set
+            //{
+            //    nextBookId = value;
+            //    Utilities.UpdateLastUsedId<T>(value);
+            //}
+        //}?
 
         public XmlRepository()
         {
             entities = new List<T>();
             xLibrary = LoadFile();
-            //var xList = from el in xLibrary.Descendants($"{typeof(T).Name}") select el;
-            //foreach (var el in xList)
-            //{
-            //    T entity = el.ToEntity<T>();
-            //    entities.Add(entity);
-            //}
+            // now it works!
+            foreach (var el in xLibrary.Descendants($"{typeof(T).Name}"))
+            {
+                T entity = el.ToEntity<T>();
+                entities.Add(entity);
+            }
         }
+
         private XElement LoadFile()
         {
-            return Utilities.ReadFromFile(filePath);
+            return Utilities.ReadFromFile();
         }
 
         public void Add(T? entity)
@@ -39,14 +72,11 @@ namespace DataAccess
                 Console.WriteLine($"Could not add {typeof(T).Name}");
             }
             entities.Add(entity);
-
-            //SaveChanges();
         }
 
         public void Delete(T entity)
         {
-            // FindById(entityToDeleteId);
-            T toDelete = FindById((int)typeof(T).GetProperty($"{typeof(T).Name}Id").GetValue(entity));
+            T? toDelete = FindById((int)typeof(T).GetProperty($"{typeof(T).Name}Id").GetValue(entity));
 
             // if null return
             if (toDelete is null)
@@ -54,23 +84,22 @@ namespace DataAccess
 
             // Delete entity from entities object
             entities.Remove(toDelete);
-
-            //SaveChanges();
         }
 
+       
         //TODO : check this -> https://learn.microsoft.com/en-us/dotnet/standard/linq/find-descendants-specific-element-name
 
         public IEnumerable<T> FindAll()
         {
-            List<T> entities = new List<T>();
+            List<T> allEntities = new List<T>();
 
             var xElements = from el in xLibrary.Descendants(typeof(T).Name) select el;
             foreach (var el in xElements)
             {
                 T? entity = el.ToEntity<T>();
-                entities.Add(entity);
+                allEntities.Add(entity);
             }
-            return entities;
+            return allEntities;
         }
 
         public T? FindById(int? id)
@@ -83,19 +112,19 @@ namespace DataAccess
             {
                 return null;
             }
-            return FindAll().FirstOrDefault(r => isIdInteger && (int)idProperty.GetValue(r) == id);
+            return FindAll().FirstOrDefault(result => isIdInteger && (int)idProperty.GetValue(result) == id);
         }
 
         public IEnumerable<T>? FindByEntityId(int? entityId, Type entityType)
         {
             PropertyInfo? entityIdProperty = entityType.GetProperty($"{entityType.Name}Id");
 
-            if (entityIdProperty == null || entityIdProperty.PropertyType != typeof(int))// || !typeof(T).GetProperties().Contains(typeof(T).GetProperty(entityIdProperty.Name)))
+            if (entityIdProperty == null || entityIdProperty.PropertyType != typeof(int))
             {
                 // error message specific for invalid id
                 return null;
             }
-            return FindAll().Where(result => entityId == (int?) entityIdProperty.GetValue(result));
+            return FindAll().Where(result => entityId == (int)entityIdProperty.GetValue(result));
         }
 
 
@@ -114,11 +143,8 @@ namespace DataAccess
                 root.Add(entityElement);
                 xLibrary.Elements(typeof(T).Name).Append(entityElement);
             }
-
-            
-
             // Save the updated library back to the XML file
-            xLibrary.Save(filePath);
+            xLibrary.Save(Utilities.DataBase);
 
         }
 
@@ -127,13 +153,14 @@ namespace DataAccess
             int entityId = (int)entity.GetType().GetProperty($"{entity.GetType().Name}Id").GetValue(entity);
             T? entityToUpdate = FindById(entityId);
 
-            PropertyInfo[] properties = typeof(T).GetProperties();
-            foreach (var property in properties)
-            {
-                property.SetValue(entityToUpdate, property.GetValue(entity));
-            }
-
-            //SaveChanges();
+            //PropertyInfo[] properties = typeof(T).GetProperties();
+            //foreach (var property in properties)
+            //{
+            //    property.SetValue(entityToUpdate, property.GetValue(entity));
+            //}
+            entities.Remove(entityToUpdate);
+            entities.Add(entity);
         }
+
     }
 }

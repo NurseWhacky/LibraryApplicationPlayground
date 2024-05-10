@@ -9,42 +9,52 @@ namespace DataAccess
     public static class Utilities
     {
         private static readonly string dataBase = "Library.xml";
-        private static int nextBookId = 0;
-        public static int NextBookId
+        public static string DataBase { get => dataBase; }
+        private static XDocument doc;// = XDocument.Load(dataBase);
+        private static XAttribute? idAttribute;// = doc.Root.Attribute("LastBookId");            
+        
+
+        public static void GetLastUsedId<T>(out int lastId)
         {
-            get
-            {
-                if (nextBookId == 0)
-                {
-                    GetLastUsedId(out XAttribute? idAttribute, out int lastUsedId);
-                    NextBookId = ++lastUsedId;
-                    idAttribute.SetValue(nextBookId.ToString());
-                    return nextBookId;
+            string entityType = typeof(T).Name;
+            doc = XDocument.Load(dataBase);
+            idAttribute = doc.Root.Attribute($"Last{entityType}Id");
 
-                }
-                return nextBookId;
-            }
-            private set
-            {
-                GetLastUsedId(out XAttribute? idAttribute, out int lastUsedId);
-                nextBookId = ++lastUsedId;
-                //nextBookId = value;
-
-            }
-        }
-
-        private static void GetLastUsedId(out XAttribute? idAttribute, out int lastId)
-        {
-            idAttribute = XDocument.Load(dataBase).Root.Attribute("LastBookId");
             int.TryParse(idAttribute.Value, out lastId);
         }
+
+        public static void UpdateLastUsedId<T>(int newId)
+        {
+            string entityType = typeof(T).Name;
+            doc = XDocument.Load(dataBase);
+            idAttribute = doc.Root.Attribute($"Last{entityType}Id");
+            idAttribute.SetValue(newId.ToString());
+            doc.Save(dataBase);
+        }
+
+
 
         public static XElement PopulateLibraryFromFile<T>()
         {
             XElement node = new XElement(typeof(T).Name);
 
             var serializer = new XmlSerializer(typeof(T));
-            //using (var reader = new )
+            // missing code
+            doc = XDocument.Load(dataBase);
+
+            // Get the root element for this type
+            XElement root = doc.Element($"{typeof(T).Name}s");
+
+            // Deserialize each element in the root into an object of type T
+            foreach (XElement element in root.Elements())
+            {
+                using (var reader = element.CreateReader())
+                {
+                    T entity = (T)serializer.Deserialize(reader);
+                    // Add the entity to your data structure here...
+                }
+            }
+
             return node;
         }
 
@@ -151,23 +161,23 @@ namespace DataAccess
             }
         }
 
-        public static XElement ReadFromFile(string path)
+        public static XElement ReadFromFile()
         {
             try
             {
-                return (path is null || path == "") ? new XElement(PopulateLibrary()) : XElement.Load(path);
+                return (dataBase is null || dataBase == "") ? new XElement(PopulateLibrary()) : XElement.Load(dataBase);
             }
             catch (FileNotFoundException)
             {
-                throw new FileNotFoundException($"File '{path}' not found.");
+                throw new FileNotFoundException($"File '{dataBase}' not found.");
             }
             catch (UnauthorizedAccessException)
             {
-                throw new UnauthorizedAccessException($"Access to file '{path}' is denied.");
+                throw new UnauthorizedAccessException($"Access to file '{dataBase}' is denied.");
             }
             catch (XmlException)
             {
-                throw new XmlException($"The file '{path}' is not a well-formed XML.");
+                throw new XmlException($"The file '{dataBase}' is not a well-formed XML.");
             }
 
         }
