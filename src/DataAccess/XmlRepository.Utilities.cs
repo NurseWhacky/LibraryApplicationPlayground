@@ -10,8 +10,8 @@ namespace DataAccess
     {
         private static readonly string dataBase = "Library.xml";
         public static string DataBase { get => dataBase; }
-        private static XDocument doc = XDocument.Load(dataBase);
-        private static XAttribute? idAttribute = doc.Root.Attribute("LastBookId");            
+        private static XDocument doc;// = XDocument.Load(dataBase);
+        private static XAttribute? idAttribute;// = doc.Root.Attribute("LastBookId");            
         private static int nextBookId = 0;
         public static int NextBookId
         {
@@ -34,14 +34,16 @@ namespace DataAccess
 
         private static void GetLastUsedId(out int lastId)
         {
-            
+            doc = XDocument.Load(dataBase);
+            idAttribute = doc.Root.Attribute("LastBookId");
+
             int.TryParse(idAttribute.Value, out lastId);
         }
 
         private static void UpdateLastUsedId(int newId)
         {
-            //XDocument doc = XDocument.Load(dataBase);
-            //XAttribute idAttribute = doc.Root.Attribute("LastBookId");
+            doc = XDocument.Load(dataBase);
+            idAttribute = doc.Root.Attribute("LastBookId");
             idAttribute.SetValue(newId.ToString());
             doc.Save(dataBase);
         }
@@ -53,7 +55,22 @@ namespace DataAccess
             XElement node = new XElement(typeof(T).Name);
 
             var serializer = new XmlSerializer(typeof(T));
-            //using (var reader = new )
+            // missing code
+            doc = XDocument.Load(dataBase);
+
+            // Get the root element for this type
+            XElement root = doc.Element($"{typeof(T).Name}s");
+
+            // Deserialize each element in the root into an object of type T
+            foreach (XElement element in root.Elements())
+            {
+                using (var reader = element.CreateReader())
+                {
+                    T entity = (T)serializer.Deserialize(reader);
+                    // Add the entity to your data structure here...
+                }
+            }
+
             return node;
         }
 

@@ -27,15 +27,15 @@ namespace API.DTOs
         public LibraryDTO() { }
 
         public LibraryDTO(Library library)
-    {
-        Users = library.Users;
-        Books = library.Books;
-        Reservations = library.Reservations;
+        {
+            Users = library.Users;
+            Books = library.Books;
+            Reservations = library.Reservations;
 
-        LastBookId = library.LastUsedIds["Book"];
-        LastUserId = library.LastUsedIds["User"];
-        LastReservationId = library.LastUsedIds["Reservation"];
-    }
+            LastBookId = library.LastUsedIds["Book"];
+            LastUserId = library.LastUsedIds["User"];
+            LastReservationId = library.LastUsedIds["Reservation"];
+        }
 
     }
 }

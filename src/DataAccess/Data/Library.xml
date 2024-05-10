@@ -1,0 +1,58 @@
+﻿<AvanadeLibrary LastBookId="3" LastUserId="2" LastReservationId="2">
+	<Users>
+		<User>
+			<UserId>1</UserId>
+			<Username>admin</Username>
+			<Password>pssw</Password>
+			<Role>Admin</Role>
+		</User>
+		<User>
+			<UserId>2</UserId>
+			<Username>usr</Username>
+			<Password>pssw</Password>
+			<Role>User</Role>
+		</User>
+	</Users>
+	<Books>
+		<Book>
+			<BookId>1</BookId>
+			<Title>Piccolo Pippo cucciolo eroico</Title>
+			<AuthorName>ciccio</AuthorName>
+			<AuthorSurname>pasticcio</AuthorSurname>
+			<Publisher>Mondadori</Publisher>
+			<Quantity>1</Quantity>
+		</Book>
+		<Book>
+			<BookId>2</BookId>
+			<Title>La buona novella</Title>
+			<AuthorName>Papa</AuthorName>
+			<AuthorSurname>Francesco</AuthorSurname>
+			<Publisher>Mondadori</Publisher>
+			<Quantity>1</Quantity>
+		</Book>
+		<Book>
+			<BookId>3</BookId>
+			<Title>I'll be back</Title>
+			<AuthorName>Silvio</AuthorName>
+			<AuthorSurname>Abberluschioni</AuthorSurname>
+			<Publisher>Minimum fax</Publisher>
+			<Quantity>1</Quantity>
+		</Book>
+	</Books>
+	<Reservations>
+		<Reservation>
+			<ReservationId>1</ReservationId>
+			<UserId>1</UserId>
+			<BookId>2</BookId>
+			<StartDate>2024-05-09T20:11:03.7131631+02:00</StartDate>
+			<EndDate>2024-06-08T20:11:03.7131631+02:00</EndDate>
+		</Reservation>
+		<Reservation>
+			<ReservationId>2</ReservationId>
+			<UserId>2</UserId>
+			<BookId>3</BookId>
+			<StartDate>2024-05-09T20:11:03.7217623+02:00</StartDate>
+			<EndDate>2024-06-08T20:11:03.7217623+02:00</EndDate>
+		</Reservation>
+	</Reservations>
+</AvanadeLibrary>

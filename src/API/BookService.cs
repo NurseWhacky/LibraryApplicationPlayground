@@ -36,7 +36,7 @@ namespace API
                 else
                 {
                     Console.WriteLine($"Libro con id {duplicate.BookId} già presente in libreria");
-                    UpdateQuantity(book);
+                    UpdateQuantity(book); // TODO : delete after testing
                 }
             }
             else

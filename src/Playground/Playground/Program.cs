@@ -25,8 +25,6 @@ List<User> users = new List<User>() {
     new User() { UserId = 2, Username = "usr", Password = "pssw", Role = UserRole.User } };
 
 
-//Library lib = new Library() { Books = books, Users = users, Reservations = reservations };
-//Library lib = new Library() { Books = books, Reservations = reservations, Users = users };
 Library lib = new Library(users, reservations, books);
 
 LibraryDTO libDto = new(lib);
@@ -34,8 +32,12 @@ LibraryDTO libDto = new(lib);
 Utilities.WriteToFile(Utilities.FromEntity(libDto));
 XElement xlibrary = Utilities.FromEntity(libDto);
 
-XElement myXBook = Utilities.FromEntity(new Book(8, "Poba", "MC", "Cavallo", "Seppiette", 20));
+XElement myXBook = Utilities.FromEntity(new Book(8, "Dubbi amorosi", "ujr", "Cavallo", "Seppiette", 20));
 
+XmlRepository<Book> bookRepo = new XmlRepository<Book>();
+BookService service = new(bookRepo, new LoggedUser(new User() { Username = "Admin", UserId = 555, Password = "admin", Role = UserRole.Admin }));
+
+service.AddBook(new BookDTO() { AuthorName = "Umberto", AuthorSurname = "Eco", Publisher = "Oscar Mondadori", Qty = 2, Title = "Il nome della rosa" });
 //Console.WriteLine(xlibrary);
 //Console.WriteLine(myXBook);
 
@@ -51,10 +53,6 @@ XElement myXBook = Utilities.FromEntity(new Book(8, "Poba", "MC", "Cavallo", "Se
 //Console.WriteLine($"Id: {cavalloBook.BookId}, Title: {cavalloBook.Title}, Author: {cavalloBook.AuthorName} {cavalloBook.AuthorSurname}");
 
 
-XmlRepository<Book> bookRepo = new XmlRepository<Book>();
-BookService service = new(bookRepo, new LoggedUser(new User() { Username = "Piseddu", UserId = 555, Password = "porcone", Role = UserRole.Admin }));
-
-service.AddBook(new BookDTO() { AuthorName = "Umberto", AuthorSurname = "Eco", Publisher = "Oscar Mondadori", Qty = 2, Title = "Il nome della rosa" });
 
 //foreach (Book book in service.GetAllBooks())
 //{

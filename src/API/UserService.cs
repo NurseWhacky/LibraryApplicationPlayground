@@ -1,4 +1,5 @@
 ﻿using API.DTOs;
+using API.Interfaces;
 using API.Model;
 using DataAccess;
 using System;
@@ -9,16 +10,17 @@ using System.Threading.Tasks;
 
 namespace API
 {
-    public class UserService
+    public class UserService : IUserService
     {
-        private readonly LoggedUser? currentUser;
+        //private readonly LoggedUser? currentUser;
         private readonly IRepository<User> userRepository;
 
         
-        public UserService(IRepository<User> userRepository, LoggedUser currentUser)
+        //public UserService(IRepository<User> userRepository, LoggedUser currentUser)
+        public UserService(IRepository<User> userRepository)
         {
             this.userRepository = userRepository;
-            this.currentUser = currentUser;
+            //this.currentUser = currentUser;
         }
 
 
@@ -32,6 +34,11 @@ namespace API
             // TODO : implement check for user role
             return userRepository.FindAll()
                 .FirstOrDefault(u => (u.Username == username));
+        }
+
+        public List<User> GetUsers()
+        {
+            return userRepository.FindAll().ToList();
         }
     }
 }
