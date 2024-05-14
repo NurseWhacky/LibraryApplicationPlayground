@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace API.Model
-{ 
+{
     public class Reservation
     {
-        public int ReservationId { get; init; }
+        public int ReservationId { get; set; }
         public int UserId { get; init; }
         public int BookId { get; init; }
         private DateTime startDate;
@@ -35,22 +35,22 @@ namespace API.Model
             }
         }
 
+        public Reservation() { }
 
-        public Reservation() {  }
-
-        public Reservation(int id, int bookId, int userId, DateTime startDate, DateTime endDate = default)
+        public Reservation(int bookId, int userId, DateTime startDate, DateTime endDate = default)
         {
-            ReservationId = id;
+            //ReservationId = library.LastUsedIds["Reservation"];
+            //library.LastUsedIds["Reservation"]++;
             UserId = userId;
             BookId = bookId;
             StartDate = startDate;
-            if(endDate == default)
+            if (endDate == default)
             {
                 EndDate = startDate.AddDays(30);
             }
             else
             {
-                EndDate = endDate; 
+                EndDate = endDate;
             }
         }
     }

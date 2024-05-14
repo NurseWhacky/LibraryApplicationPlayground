@@ -11,6 +11,8 @@ namespace API.DTOs
     [XmlRoot("AvanadeLibrary")]
     public class LibraryDTO
     {
+        private string filePath = "library.xml";
+
         public List<User> Users { get; set; }
         public List<Book> Books { get; set; }
         public List<Reservation> Reservations { get; set; }
@@ -36,6 +38,5 @@ namespace API.DTOs
             LastUserId = library.LastUsedIds["User"];
             LastReservationId = library.LastUsedIds["Reservation"];
         }
-
     }
 }

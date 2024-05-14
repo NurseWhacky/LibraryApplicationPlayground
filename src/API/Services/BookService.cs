@@ -1,4 +1,5 @@
 ﻿using API.DTOs;
+using API.Interfaces;
 using API.Model;
 using DataAccess;
 using System;
@@ -7,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace API
+namespace API.Services
 {
-    public class BookService
+    public class BookService : IBookService
     {
         private readonly IRepository<Book> bookRepository;
         private readonly ReservationService reservationService;
@@ -46,14 +47,13 @@ namespace API
 
         }
 
-        public void AddBook(BookDTO book)
+        public void AddBook(BookDTO bookDto)
         {
             if (!currentUser.IsAdmin)
             { Console.WriteLine("You are not authorized to perform this action."); }
             else
             {
-                Book bookToAdd = new Book() { Title = book.Title, AuthorName = book.AuthorName, AuthorSurname = book.AuthorSurname, Publisher = book.Publisher, Quantity = book.Qty, BookId = bookRepository.NextBookId()};
-                //Utilities.NextBookId += 1;
+                Book bookToAdd = bookDto.Book;
                 bookRepository.Add(bookToAdd);
                 bookRepository.SaveChanges();
             }
@@ -64,7 +64,7 @@ namespace API
             return bookRepository.FindAll().ToList();
         }
 
-        public Book? GetBook(int id)
+        public Book? GetBookById(int id)
         {
             return bookRepository.FindById(id);
         }
@@ -84,6 +84,12 @@ namespace API
                 return filtered.Where(b => IsBookAvailable(b))
                     .SelectMany(b => new Book[] { b })
                     .ToList();
+            }else if (!searchObject.IsAvailable)
+            {
+                return filtered.Where(b => !IsBookAvailable(b))
+                    .SelectMany(b => new Book[] { b })
+                    .ToList();
+
             }
             return filtered;
         }
@@ -125,23 +131,18 @@ namespace API
             //}
         }
 
-        public void EditBook(Book book)
+        public void UpdateBook(BookDTO bookDto)
         {
-            //if (authenticatedUser.Role == UserRole.Admin)
-            if (currentUser.IsAdmin)
-            {
 
-                bookRepository.Update(book);
-                bookRepository.SaveChanges();
-            }
         }
 
-        public void DeleteBook(Book book)
+        public void DeleteBook(int id)
         {
             //if (authenticatedUser.Role == UserRole.Admin)
             if (currentUser.IsAdmin)
             {
-                bookRepository.Delete(book);
+                var bookToDelete = bookRepository.FindById(id);
+                bookRepository.Delete(bookToDelete);
                 bookRepository.SaveChanges();
             }
         }

@@ -8,12 +8,13 @@ namespace API.Model
 {
     public abstract class Entity
     {
-        public int Id { get; set; }
+        protected Library? library;
 
-        public Entity()
+        public Entity() { }
+
+        public Entity(Library library)
         {
-           // Id = GetNextId();
-           Id = 0; // just to shut up compiler!
+            this.library = library;
         }
     }
 }

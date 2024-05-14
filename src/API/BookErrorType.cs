@@ -1,6 +1,6 @@
 ﻿namespace API
 {
-    public enum ErrorType
+    public enum BookErrorType
     {
         NotAvailable,
         AlreadyReservedByUser,

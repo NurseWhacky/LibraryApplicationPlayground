@@ -12,42 +12,51 @@ namespace DataAccess
 {
     public static class Utils
     {
-        private static readonly string dataBase = "Library.xml";
+        private static readonly string dataBase = "library.xml";
         public static string DataBase { get => dataBase; }
-        private static XDocument doc;
+        private static XDocument? doc = XDocument.Load(DataBase);
         private static XAttribute? idAttribute;
-        private static int nextBookId = 0;
-        public static int NextBookId
-        {
-            get
-            {
-                if (nextBookId == 0)
-                {
-                    GetLastUsedId(out int lastUsedId);
-                    nextBookId = ++lastUsedId;
+        //private static int nextBookId = 0;
+        //public static int NextBookId
+        //{
+        //    get
+        //    {
+        //        if (nextBookId == 0)
+        //        {
+        //            GetLastUsedId(out int lastUsedId);
+        //            nextBookId = ++lastUsedId;
 
-                }
-                return nextBookId;
-            }
-            set
-            {
-                nextBookId = value;
-                UpdateLastUsedId(nextBookId);
-            }
+        //        }
+        //        return nextBookId;
+        //    }
+        //    set
+        //    {
+        //        nextBookId = value;
+        //        UpdateLastUsedId(nextBookId);
+        //    }
+        //}
+
+        private static int GetLastId<T>()
+        {
+            //XElement root = doc.Root;
+            idAttribute = doc.Root.Attribute($"Last{typeof(T).Name}Id");
+            int.TryParse(idAttribute.Value, out int lastEntityId);
+            return lastEntityId;
         }
 
-        private static void GetLastUsedId(out int lastId)
+        private static void SetLastId<T>(ref int newId)
         {
-            doc = XDocument.Load(dataBase);
-            idAttribute = doc.Root.Attribute("LastBookId");
-
-            int.TryParse(idAttribute.Value, out lastId);
+            idAttribute = doc.Root.Attribute($"Last{typeof(T).Name}Id");
+            ++newId;
+            idAttribute.Value = newId.ToString();
+            doc.Save(DataBase);
         }
 
-        private static void UpdateLastUsedId(int newId)
+        private static void UpdateLastUsedId<T>(ref int newId)
         {
             doc = XDocument.Load(dataBase);
-            idAttribute = doc.Root.Attribute("LastBookId");
+            idAttribute = doc.Root.Attribute($"Last{typeof(T).Name}Id");
+            //idAttribute = doc.Root.Attribute("LastBookId");
             idAttribute.SetValue(newId.ToString());
             doc.Save(dataBase);
         }
@@ -147,7 +156,7 @@ namespace DataAccess
         public static void PrintColumns(DataTable table)
         {
             // Loop through all the rows in the DataTableReader
-            foreach(DataColumn col in table.Columns)
+            foreach (DataColumn col in table.Columns)
             {
                 Console.Write($"{col.ColumnName}  ");
             }

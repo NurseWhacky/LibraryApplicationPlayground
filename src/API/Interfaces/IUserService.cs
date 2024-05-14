@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace API.Interfaces
 {
-    interface IUserService
+    public interface IUserService
     {
         List<User> GetUsers();
         User GetUserById(int id);

@@ -8,15 +8,16 @@ using System.Threading.Tasks;
 
 namespace API.Interfaces
 {
-    interface IReservationService
+    public interface IReservationService
     {
         List<Reservation> GetReservations();
         List<Reservation> GetReservationsByBookId(int bookId);
         List<Reservation> GetReservationsByUserId(int userId);
         List<Reservation> GetReservationsByStatus(bool status);
-        void AddReservation(Book book);
+        void AddReservation(Reservation reservation);
+        Reservation? CreateReservation(Book book);
         void DeleteReservations(int bookId);
-        void UpdateReservation(Reservation reservation);
+        void UpdateReservation(int reservationId);
 
     }
 }

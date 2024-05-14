@@ -1,4 +1,5 @@
-﻿using System;
+﻿using API.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ using System.Xml.Serialization;
 namespace API.Model
 {
     [XmlRoot("Book")]
-    public class Book
+    public class Book //: Entity
     {
         public int BookId { get; init; }
         public string Title { get; set; }
@@ -19,15 +20,29 @@ namespace API.Model
 
         public Book() { }
 
-        public Book(int bookId, string title, string authorName, string authorSurname, string publisher, int quantity)
+        public Book(int id, BookDTO bookDto)
         {
-            BookId = bookId;
-            Title = title;
-            AuthorName = authorName;
-            AuthorSurname = authorSurname;
-            Publisher = publisher;
-            Quantity = quantity;
+            BookId = id;
+            Title = bookDto.Title;
+            AuthorName = bookDto.AuthorName;
+            AuthorSurname = bookDto.AuthorSurname;
+            Publisher = bookDto.Publisher;
+            Quantity = bookDto.Qty;
         }
+
+        //public Book(int id, string title, string authorName, string authorSurname, string publisher, int quantity)
+        //{
+        //    //BookId = library.LastUsedIds["Book"];
+        //    BookId = id;
+        //    Title = title;
+        //    AuthorName = authorName;
+        //    AuthorSurname = authorSurname;
+        //    Publisher = publisher;
+        //    Quantity = quantity;
+
+        //    //library.Books.Add(this);
+        //    //library.LastUsedIds["Book"]++;
+        //}
 
         public override bool Equals(object? obj)
         {

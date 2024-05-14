@@ -1,13 +1,9 @@
 ﻿using API.DTOs;
+using API.Interfaces;
 using API.Model;
 using DataAccess;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace API
+namespace API.Services
 {
     public class LoginService : ILogger
     {
@@ -20,14 +16,14 @@ namespace API
 
         public LoggedUser? Login(UserLoginDTO credentials)
         {
-            if(credentials.Username == null || credentials.Password == null)
+            if (credentials.Username == null || credentials.Password == null)
             { return null; }
 
             User? authenticatedUser = userRepository.FindAll()
-                .Where(u => (u.Username == credentials.Username && u.Password == credentials.Password))
+                .Where(u => u.Username == credentials.Username && u.Password == credentials.Password)
                 .FirstOrDefault();
             if (authenticatedUser == null)
-            { return null; }
+            { return new LoggedUser(null); }
             return new LoggedUser(authenticatedUser);
         }
     }

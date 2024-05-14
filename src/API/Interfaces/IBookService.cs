@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace API.Interfaces
 {
-    interface IBookService
+    public interface IBookService
     {
         List<Book> GetAllBooks();
         List<Book> GetBooksBySearchCriteria(BookSearchObject searchCriteria);
