@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
+﻿using System.Reflection;
 using System.Xml.Linq;
 
 namespace DataAccess
@@ -15,6 +8,26 @@ namespace DataAccess
         private XElement xLibrary;
         public XElement XLibrary { get { return xLibrary; } }
         private List<T> entities; // TODO: MUST be updated after each operation that changes library state
+        public List<T> Entities
+        {
+            get
+            {
+                return entities != null ? entities : new List<T>();
+            }
+            set
+            {
+                if (value is List<T> && (entities.Count() == 0 || entities is null))
+                { entities = value; }
+                if (entities != null && value.Count() != 0)
+                {
+                    entities.Clear(); 
+                    foreach (T entity in value)
+                    { entities.Add(entity); }
+                }
+                else
+                { entities = new List<T>(); }
+            }
+        }
         private int nextBookId = 0;
 
         public int NextBookId()
@@ -134,14 +147,13 @@ namespace DataAccess
             XElement? root = xLibrary.Element($"{typeof(T).Name}s");
 
             // Delete existing xlibrary
-            xLibrary.Elements($"{typeof(T).Name}").Remove();
+            root.Elements().Remove();
 
             // Convert each entity in the entities list to an XElement and add it to the root
             foreach (var entity in entities)
             {
                 XElement entityElement = Utilities.FromEntity(entity);
                 root.Add(entityElement);
-                xLibrary.Elements(typeof(T).Name).Append(entityElement);
             }
             // Save the updated library back to the XML file
             xLibrary.Save(Utilities.DataBase);

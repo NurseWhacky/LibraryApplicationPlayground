@@ -5,6 +5,7 @@ using DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -84,7 +85,8 @@ namespace API.Services
                 return filtered.Where(b => IsBookAvailable(b))
                     .SelectMany(b => new Book[] { b })
                     .ToList();
-            }else if (!searchObject.IsAvailable)
+            }
+            else if (!searchObject.IsAvailable)
             {
                 return filtered.Where(b => !IsBookAvailable(b))
                     .SelectMany(b => new Book[] { b })
@@ -141,9 +143,20 @@ namespace API.Services
             //if (authenticatedUser.Role == UserRole.Admin)
             if (currentUser.IsAdmin)
             {
-                var bookToDelete = bookRepository.FindById(id);
-                bookRepository.Delete(bookToDelete);
-                bookRepository.SaveChanges();
+                Book? bookToDelete = bookRepository.FindById(id);
+                if (bookToDelete == null)
+                {
+                    Console.WriteLine($"Cannot perform the action requested, the book does not exist.");
+                    return;
+                }
+                try
+                {
+
+                    bookRepository.Delete(bookToDelete);
+                    bookRepository.SaveChanges();
+                }
+                catch (TargetException ex) { Console.WriteLine(ex.Message); }
+               
             }
         }
 
