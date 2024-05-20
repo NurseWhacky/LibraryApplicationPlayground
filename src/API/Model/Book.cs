@@ -8,10 +8,8 @@ using System.Xml.Serialization;
 
 namespace API.Model
 {
-    [XmlRoot("Book")]
-    public class Book //: Entity
+    public class Book : Entity
     {
-        public int BookId { get; init; }
         public string Title { get; set; }
         public string AuthorName { get; set; }
         public string AuthorSurname { get; set; }
@@ -22,7 +20,7 @@ namespace API.Model
 
         public Book(int id, BookDTO bookDto)
         {
-            BookId = id;
+            Id = id;
             Title = bookDto.Title;
             AuthorName = bookDto.AuthorName;
             AuthorSurname = bookDto.AuthorSurname;

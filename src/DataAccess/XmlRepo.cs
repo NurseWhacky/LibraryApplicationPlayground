@@ -3,8 +3,15 @@ using System.Xml.Linq;
 
 namespace DataAccess
 {
-    public class XmlRepository<T> : IRepository<T> where T : class, new()
+    public class XmlRepo<T> : IRepository<T> where T : class, new()
     {
+        private int lastUsedId;
+        public int LastUsedId
+        {
+            get => lastUsedId != default ? lastUsedId : Utilities.GetLastId<T>();
+
+            set => lastUsedId = value == lastUsedId + 1 ? value : lastUsedId + 1;
+        }
         private XElement xLibrary;
         public XElement XLibrary { get { return xLibrary; } }
         private List<T> entities; // TODO: MUST be updated after each operation that changes library state
@@ -28,40 +35,8 @@ namespace DataAccess
                 { entities = new List<T>(); }
             }
         }
-        private int nextBookId = 0;
-
-        public int NextBookId()
-        {
-            if (nextBookId == 0)
-            {
-                // TODO: Da rivedere -> non modifica attributo su file!
-                Utilities.GetLastUsedId<T>(out int lastUsedId);
-                nextBookId = ++lastUsedId;
-                Utilities.UpdateLastUsedId<T>(lastUsedId);
-            }
-            return nextBookId;
-
-        }
-            //get
-            //{
-            //    if (nextBookId == 0)
-            //    {
-            //        //GetLastUsedId(out int lastUsedId);
-            //        Utilities.GetLastUsedId<T>(out int lastUsedId);
-            //        nextBookId = lastUsedId++;
-            //        //nextBookId++;
-
-            //    }
-            //    return nextBookId;
-            //}
-            //set
-            //{
-            //    nextBookId = value;
-            //    Utilities.UpdateLastUsedId<T>(value);
-            //}
-        //}?
-
-        public XmlRepository()
+        
+        public XmlRepo()
         {
             entities = new List<T>();
             xLibrary = LoadFile();

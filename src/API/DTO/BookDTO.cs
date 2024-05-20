@@ -1,5 +1,5 @@
 ﻿using API.Model;
-using API.Utils;
+using DataAccess;
 using System.Xml.Linq;
 
 namespace API.DTOs
@@ -37,7 +37,7 @@ namespace API.DTOs
             AuthorSurname = authorSurname;
             Qty = quantity;
             Book = new Book(id: lastUsedId, this);
-            XmlBook = XmlHelper.FromEntity(Book);
+            XmlBook = Utilities.FromEntity(Book);
         }
 
         public BookDTO(Book book)
@@ -48,14 +48,13 @@ namespace API.DTOs
             AuthorName = book.AuthorName;
             AuthorSurname = book.AuthorSurname;
             Qty = book.Quantity;
-            XmlBook = book.FromEntity();
+            XmlBook = Utilities.FromEntity(book);
         }
 
         public BookDTO(XElement xmlBook)
         {
             XmlBook = xmlBook;
-            //Book = xmlBook.XmlHelper.ToEntity<Book>() ?? new Book();
-            Book = XmlHelper.ToEntity<Book>(xmlBook) ?? new Book();
+            Book = xmlBook.ToEntity<Book>() ?? new Book();
         }
     }
 }

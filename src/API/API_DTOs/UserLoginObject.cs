@@ -4,13 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace API.Model
+namespace API.API_DTOs
 {
-    public abstract class Entity
+    public record UserLoginObject(string Username, string Password)
     {
-        public int Id { get; set; }
-
-        public Entity() { }
-
+        
     }
 }

@@ -7,9 +7,9 @@ using System.Xml.Serialization;
 
 namespace API.Model
 {
-    public class User
+    public class User: Entity
     {
-        public int UserId { get; init; }
+        //public int UserId { get; init; }
         public string Username { get; set; }
         public string Password { get; set; }
         public UserRole Role { get; set; }

@@ -1,41 +1,42 @@
-﻿using API.DTO;
-using API.DTOs;
-using API.Interfaces;
+﻿using API.Interfaces;
 using API.Model;
+using DAL;
 using DataAccess;
 
 namespace API.Services
 {
     public class ReservationService : IReservationService
     {
-        private readonly IRepository<Reservation> repository;
+        private readonly DAL.IRepository reservationRepo;
+        private readonly IRepository<Reservation> repository; // TO DELETE!
         private readonly LoggedUser loggedUser;
 
-        public ReservationService(IRepository<Reservation> repository, LoggedUser loggedUser)
+        public ReservationService(DAL.IRepository reservationRepo, IRepository<Reservation> repository, LoggedUser loggedUser)
         {
-            this.repository = repository;
+            this.reservationRepo = reservationRepo;
+            this.repository = repository; // TO DELETE!
             this.loggedUser = loggedUser;
         }
         public List<Reservation> GetReservationsByBookId(int bookId)
         {
-            return repository.FindByEntityId(bookId, typeof(Book)).ToList();
+            return repository.FindByEntityId(bookId, typeof(Book)).ToList();// TO DELETE!
         }
 
         public List<Reservation> GetReservationsByUserId(int userId)
         {
-            int currentUserId = int.Parse(loggedUser.Id);
             try
             {
+                int currentUserId = int.Parse(loggedUser.Id);
                 if (loggedUser.IsAdmin && userId != currentUserId)
                 {
-                    return repository.FindByEntityId(userId, typeof(User)).ToList();
+                    return repository.FindByEntityId(userId, typeof(User)).ToList();// TO DELETE!
                 }
                 if (userId == currentUserId)
                 {
-                    return repository.FindByEntityId(currentUserId, typeof(User)).ToList();
+                    return repository.FindByEntityId(currentUserId, typeof(User)).ToList();// TO DELETE!
                 }
             }
-            catch (Exception ex)
+            catch (FormatException ex)
             { Console.WriteLine(ex.Message); }
 
             return new List<Reservation>();
@@ -43,7 +44,7 @@ namespace API.Services
 
         public List<Reservation> GetReservations()
         {
-            return repository.FindAll().ToList();
+            return repository.FindAll().ToList();// TO DELETE!
         }
 
 
@@ -51,17 +52,17 @@ namespace API.Services
         {
             if (active)
             {
-                return repository.FindAll().Where(r => r.EndDate > DateTime.Now).ToList();
+                return repository.FindAll().Where(r => r.EndDate > DateTime.Now).ToList();// TO DELETE!
             }
             else
             {
-                return repository.FindAll().Where(r => r.EndDate < DateTime.Now).ToList();
+                return repository.FindAll().Where(r => r.EndDate < DateTime.Now).ToList();// TO DELETE!
             }
         }
 
         public void AddReservation(Reservation reservation)
         {
-            repository.Add(reservation);
+            repository.Add(reservation);// TO DELETE!
             //if (!CanUserReserve(book, out BookErrorType type))
             //{
             //    //PrintErrorMessage(type); ==> for a future Printer class
@@ -77,19 +78,19 @@ namespace API.Services
 
         public void DeleteReservations(int bookId)
         {
-            List<Reservation> reservationsToDelete = repository.FindByEntityId(bookId, typeof(Book)).ToList();
+            List<Reservation> reservationsToDelete = repository.FindByEntityId(bookId, typeof(Book)).ToList();// TO DELETE!
             foreach (var reservation in reservationsToDelete)
             {
-                repository.Delete(reservation);
+                repository.Delete(reservation);// TO DELETE!
             }
-            repository.SaveChanges();
+            repository.SaveChanges();// TO DELETE!
         }
 
         public void UpdateReservation(int reservationId)
         {
-            var reservationToUpdate = repository.FindById(reservationId);
+            var reservationToUpdate = repository.FindById(reservationId);// TO DELETE!
             reservationToUpdate.EndDate = DateTime.Now;
-            repository.Update(reservationToUpdate);
+            repository.Update(reservationToUpdate);// TO DELETE!
 
         }
 
@@ -100,12 +101,12 @@ namespace API.Services
                 message = BookErrorType.NonExistent;
                 return false;
             }
-            if (GetReservationsByBookId(book.BookId).Any(res => res.EndDate > DateTime.Now && res.UserId == int.Parse(loggedUser.Id)))
+            if (GetReservationsByBookId(book.Id).Any(res => res.EndDate > DateTime.Now && res.UserId == int.Parse(loggedUser.Id)))
             {
                 message = BookErrorType.AlreadyReservedByUser;
                 return false;
             }
-            if (GetReservationsByStatus(active: true).Where(res => res.BookId == book.BookId).Count() >= book.Quantity)
+            if (GetReservationsByStatus(active: true).Where(res => res.BookId == book.Id).Count() >= book.Quantity)
             {
                 message = BookErrorType.NotAvailable;
                 return false;
@@ -123,7 +124,25 @@ namespace API.Services
                 // PrintError(errorMessage); 
                 return null;
             }
-            return new Reservation(bookId: book.BookId, userId: int.Parse(loggedUser.Id), startDate: DateTime.Now);
+            // TODO: CHANGE repository and logic of assigning Id (DAL responsibility) 
+            return new Reservation(bookId: book.Id, userId: int.Parse(loggedUser.Id), startDate: DateTime.Now);
+        }
+
+        // TODO : Implement reservationservice methods and test them!
+        // TODO : logic in here is flawed, fix it
+        public bool IsBookAvailable(Book book)
+        {
+            List<Reservation> activeReservations = GetReservationsByBookId(book.Id)
+                .Where(res => res.EndDate > DateTime.Now)
+                .ToList();
+
+            return activeReservations.Count() < book.Quantity;
+
+        }
+
+        public bool IsBookDeletable(Book book)
+        {
+            return GetReservationsByBookId(book.Id).Any(res => res.EndDate > DateTime.Now);
         }
     }
 

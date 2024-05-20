@@ -10,7 +10,7 @@ namespace API.Interfaces
     public interface IUserService
     {
         List<User> GetUsers();
-        User GetUserById(int id);
-        User GetUserByUsername(string username);
+        User? GetUserById(int id);
+        User? GetUserByUsername(string username);
     }
 }

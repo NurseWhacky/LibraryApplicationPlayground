@@ -1,10 +1,5 @@
 ﻿using API.Model;
-using API.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DataAccess;
 using System.Xml.Linq;
 
 namespace API.DTO
@@ -16,14 +11,14 @@ namespace API.DTO
         public XElement? XmlReservation { get; set; }
         public Reservation? Reservation
         {
-            get => XmlReservation.ToEntity<Reservation>();
-            set { Reservation = value != null ? value : null; }
+            get => XmlReservation?.ToEntity<Reservation>();
+            set { Reservation = value != null ? value : new Reservation(); }
         }
 
         public ReservationDTO(XElement? xReservation)
         {
             XmlReservation = xReservation;
-            Reservation = XmlReservation == null ? new Reservation() : XmlReservation.ToEntity<Reservation>();
+            Reservation = xReservation?.ToEntity<Reservation>();
         }
 
         public ReservationDTO(int userId, int bookId)

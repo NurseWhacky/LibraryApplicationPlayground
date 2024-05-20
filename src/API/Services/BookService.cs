@@ -17,10 +17,11 @@ namespace API.Services
         private readonly ReservationService reservationService;
         private readonly LoggedUser currentUser;
 
-        public BookService(IRepository<Book> bookRepository, LoggedUser currentUser)
+        public BookService(IRepository<Book> bookRepository, LoggedUser currentUser, ref ReservationService reservationService)
         {
             this.bookRepository = bookRepository;
             this.currentUser = currentUser;
+            this.reservationService = reservationService;
         }
 
         public void AddBook(Book book)
@@ -37,13 +38,13 @@ namespace API.Services
                 }
                 else
                 {
-                    Console.WriteLine($"Libro con id {duplicate.BookId} già presente in libreria");
+                    Console.WriteLine($"Book with title '{book.Title}' already present in library. Adding new copy.");
                     UpdateQuantity(book); // TODO : delete after testing
                 }
             }
             else
             {
-                Console.WriteLine("Non autorizzato!");
+                Console.WriteLine("You are not authorized to perform this action.");
             }
 
         }
@@ -82,13 +83,13 @@ namespace API.Services
 
             if (searchObject.IsAvailable)
             {
-                return filtered.Where(b => IsBookAvailable(b))
+                return filtered.Where(b => reservationService.IsBookAvailable(b))
                     .SelectMany(b => new Book[] { b })
                     .ToList();
             }
             else if (!searchObject.IsAvailable)
             {
-                return filtered.Where(b => !IsBookAvailable(b))
+                return filtered.Where(b => !reservationService.IsBookAvailable(b))
                     .SelectMany(b => new Book[] { b })
                     .ToList();
 
@@ -96,22 +97,22 @@ namespace API.Services
             return filtered;
         }
 
-        // TODO : Implement reservationservice methods and test them!
-        // TODO : logic in here is flawed, fix it
-        public bool IsBookAvailable(Book book)
-        {
-            List<Reservation> activeReservations = reservationService.GetReservationsByBookId(book.BookId)
-                .Where(res => res.EndDate > DateTime.Now)
-                .ToList();
+        //// TODO : Implement reservationservice methods and test them!
+        //// TODO : logic in here is flawed, fix it
+        //public bool IsBookAvailable(Book book)
+        //{
+        //    List<Reservation> activeReservations = reservationService.GetReservationsByBookId(book.BookId)
+        //        .Where(res => res.EndDate > DateTime.Now)
+        //        .ToList();
 
-            return activeReservations.Count() < book.Quantity;
+        //    return activeReservations.Count() < book.Quantity;
 
-        }
+        //}
 
-        public bool IsBookDeletable(Book book)
-        {
-            return reservationService.GetReservationsByBookId(book.BookId).Any(res => res.EndDate > DateTime.Now);
-        }
+        //public bool IsBookDeletable(Book book)
+        //{
+        //    return reservationService.GetReservationsByBookId(book.BookId).Any(res => res.EndDate > DateTime.Now);
+        //}
 
         public void UpdateQuantity(Book duplicate)
         {

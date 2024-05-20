@@ -8,7 +8,6 @@ namespace DataAccess
 {
     public interface IRepository<T>
     {
-        int NextBookId();
         IEnumerable<T> FindAll();
         T FindById(int? id);
         IEnumerable<T> FindByEntityId(int? id, Type type);

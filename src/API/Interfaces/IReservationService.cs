@@ -18,6 +18,8 @@ namespace API.Interfaces
         Reservation? CreateReservation(Book book);
         void DeleteReservations(int bookId);
         void UpdateReservation(int reservationId);
+        bool IsBookAvailable(Book book);
+        bool IsBookDeletable(Book book);
 
     }
 }

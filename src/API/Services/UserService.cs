@@ -6,15 +6,12 @@ namespace API.Services
 {
     public class UserService : IUserService
     {
-        //private readonly LoggedUser? currentUser;
         private readonly IRepository<User> userRepository;
 
 
-        //public UserService(IRepository<User> userRepository, LoggedUser currentUser)
         public UserService(IRepository<User> userRepository)
         {
             this.userRepository = userRepository;
-            //this.currentUser = currentUser;
         }
 
 

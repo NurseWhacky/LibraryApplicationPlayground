@@ -14,7 +14,7 @@ namespace API
             {
                 Username = user.Username;
                 IsAdmin = user.Role == UserRole.Admin;
-                Id = user.UserId.ToString();
+                Id = user.Id.ToString();
             }
             else
             {

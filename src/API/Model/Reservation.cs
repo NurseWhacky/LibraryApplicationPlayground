@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace API.Model
 {
-    public class Reservation
+    public class Reservation: Entity
     {
-        public int ReservationId { get; set; }
+        //    public int ReservationId { get; set; }
         public int UserId { get; init; }
         public int BookId { get; init; }
         private DateTime startDate;
@@ -41,6 +41,7 @@ namespace API.Model
         {
             //ReservationId = library.LastUsedIds["Reservation"];
             //library.LastUsedIds["Reservation"]++;
+            //Id = id;
             UserId = userId;
             BookId = bookId;
             StartDate = startDate;

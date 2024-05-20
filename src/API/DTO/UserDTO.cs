@@ -1,10 +1,5 @@
 ﻿using API.Model;
-using API.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DataAccess;
 using System.Xml.Linq;
 
 namespace API.DTO
@@ -17,7 +12,7 @@ namespace API.DTO
         public UserDTO(User user) 
         { 
             User = user; 
-            XmlUser = user.FromEntity();
+            XmlUser = Utilities.FromEntity(user);
         }
 
         public UserDTO(XElement xmlUser)
